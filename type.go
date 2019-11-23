@@ -8,7 +8,7 @@ import (
 
 // init host info
 type HostInfo struct {
-	Listen    string
+	Listens   []string
 	Cert      *tls.Certificate
 	HostNames []string
 	Handler   http.Handler

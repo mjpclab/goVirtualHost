@@ -12,9 +12,8 @@ func NewService() *Service {
 	return service
 }
 
-func (svc *Service) Add(host *HostInfo) error {
-	// hostsInfo
-	param := host.toParam()
+func (svc *Service) addParam(param *param) error {
+	// params
 	err := svc.params.validate(param)
 	if err != nil {
 		return err
@@ -46,6 +45,20 @@ func (svc *Service) Add(host *HostInfo) error {
 
 	// return
 	return nil
+}
+
+func (svc *Service) Add(host *HostInfo) []error {
+	errors := []error{}
+
+	params := host.toParams()
+	for _, param := range params {
+		err := svc.addParam(param)
+		if err != nil {
+			errors = append(errors, err)
+		}
+	}
+
+	return errors
 }
 
 func (svc *Service) Open() (errors []error) {

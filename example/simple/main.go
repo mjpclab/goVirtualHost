@@ -9,26 +9,26 @@ import (
 func main() {
 	println("Starting...")
 
-	var err error
+	var errors []error
 	svc := goVirtualHost.NewService()
 
 	// virtual host: localhost
-	err = svc.Add(&goVirtualHost.HostInfo{
-		Listen:    ":8080",
+	errors = svc.Add(&goVirtualHost.HostInfo{
+		Listens:   []string{":8080"},
 		HostNames: []string{"localhost"},
 		Handler:   http.FileServer(http.Dir(".")),
 	})
-	if err != nil {
-		fmt.Println(err)
+	if len(errors)>0 {
+		fmt.Println(errors)
 	}
 
 	// virtual host: default
-	err = svc.Add(&goVirtualHost.HostInfo{
-		Listen:  ":8080",
+	errors = svc.Add(&goVirtualHost.HostInfo{
+		Listens: []string{":8080"},
 		Handler: http.FileServer(http.Dir("/tmp")),
 	})
-	if err != nil {
-		fmt.Println(err)
+	if len(errors)>0 {
+		fmt.Println(errors)
 	}
 
 	// start server
