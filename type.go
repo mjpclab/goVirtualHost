@@ -8,16 +8,18 @@ import (
 
 // init host info
 type HostInfo struct {
-	Listens   []string
-	Cert      *tls.Certificate
-	HostNames []string
-	Handler   http.Handler
+	Listens    []string
+	ListensTLS []string
+	Cert       *tls.Certificate
+	HostNames  []string
+	Handler    http.Handler
 }
 
 // normalized HostInfo Param
 type param struct {
 	proto     string
 	addr      string
+	useTLS    bool
 	cert      *tls.Certificate
 	hostNames []string
 	handler   http.Handler
@@ -37,6 +39,7 @@ type listeners []*listener
 
 // wrapper for http.Server
 type server struct {
+	useTLS       bool
 	vhosts       vhosts
 	defaultVhost *vhost
 

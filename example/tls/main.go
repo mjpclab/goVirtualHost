@@ -20,10 +20,10 @@ func main() {
 		fmt.Println(errors)
 	}
 	errors = svc.Add(&goVirtualHost.HostInfo{
-		Listens:   []string{":8080"},
-		Cert:      &certLocalhost,
-		HostNames: []string{"localhost"},
-		Handler:   http.FileServer(http.Dir(".")),
+		ListensTLS: []string{":8080"},
+		Cert:       &certLocalhost,
+		HostNames:  []string{"localhost"},
+		Handler:    http.FileServer(http.Dir(".")),
 	})
 	if len(errors) > 0 {
 		fmt.Println(errors)
@@ -35,10 +35,10 @@ func main() {
 		fmt.Println(errors)
 	}
 	errors = svc.Add(&goVirtualHost.HostInfo{
-		Listens:   []string{":8080"},
-		Cert:      &certExample,
-		HostNames: nil,
-		Handler:   http.FileServer(http.Dir("/tmp")),
+		ListensTLS: []string{":8080"},
+		Cert:       &certExample,
+		HostNames:  nil,
+		Handler:    http.FileServer(http.Dir("/tmp")),
 	})
 	if len(errors) > 0 {
 		fmt.Println(errors)

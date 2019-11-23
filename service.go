@@ -12,12 +12,8 @@ func NewService() *Service {
 	return service
 }
 
-func (svc *Service) addParam(param *param) error {
+func (svc *Service) addParam(param *param) {
 	// params
-	err := svc.params.validate(param)
-	if err != nil {
-		return err
-	}
 	svc.params = append(svc.params, param)
 
 	// listeners, servers
@@ -28,7 +24,7 @@ func (svc *Service) addParam(param *param) error {
 	if listener != nil {
 		server = listener.server
 	} else {
-		server = newServer()
+		server = newServer(param.useTLS)
 		listener = newListener(param.proto, param.addr)
 		listener.server = server
 
@@ -42,20 +38,20 @@ func (svc *Service) addParam(param *param) error {
 
 	// server -> vhost
 	server.vhosts = append(server.vhosts, vhost)
-
-	// return
-	return nil
 }
 
 func (svc *Service) Add(host *HostInfo) []error {
 	errors := []error{}
 
-	params := host.toParams()
-	for _, param := range params {
-		err := svc.addParam(param)
+	newParams := host.toParams()
+	for _, newParam := range newParams {
+		err := svc.params.validate(newParam)
 		if err != nil {
 			errors = append(errors, err)
+			continue
 		}
+
+		svc.addParam(newParam)
 	}
 
 	return errors

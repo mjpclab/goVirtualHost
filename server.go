@@ -6,8 +6,9 @@ import (
 	"net/http"
 )
 
-func newServer() *server {
+func newServer(useTLS bool) *server {
 	server := &server{
+		useTLS:       useTLS,
 		vhosts:       vhosts{},
 		defaultVhost: nil,
 
@@ -50,23 +51,21 @@ func (server *server) updateDefaultVhost() {
 }
 
 func (server *server) updateHttpServerTLSConfig() {
-	certs := []tls.Certificate{}
-	for _, vhost := range server.vhosts {
-		if vhost.cert == nil {
-			continue
+	var tlsConfig *tls.Config
+
+	if server.useTLS {
+		certs := []tls.Certificate{}
+
+		for _, vhost := range server.vhosts {
+			certs = append(certs, *vhost.cert)
 		}
-		certs = append(certs, *vhost.cert)
+
+		tlsConfig = &tls.Config{
+			Certificates: certs,
+		}
+		tlsConfig.BuildNameToCertificate()
 	}
 
-	if len(certs) == 0 {
-		server.httpServer.TLSConfig = nil
-		return
-	}
-
-	tlsConfig := &tls.Config{
-		Certificates: certs,
-	}
-	tlsConfig.BuildNameToCertificate()
 	server.httpServer.TLSConfig = tlsConfig
 }
 
@@ -80,7 +79,7 @@ func (server *server) updateHttpServerHandler() {
 }
 
 func (server *server) open(listener *listener) error {
-	if server.httpServer.TLSConfig != nil {
+	if server.useTLS {
 		return server.httpServer.ServeTLS(listener.netListener, "", "")
 	} else {
 		return server.httpServer.Serve(listener.netListener)

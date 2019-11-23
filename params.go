@@ -3,6 +3,10 @@ package goVirtualHost
 import "errors"
 
 func (params params) validate(param *param) error {
+	if param.useTLS && param.cert == nil {
+		return errors.New("certificate not found for TLS listens")
+	}
+
 	proto := param.proto
 	addr := param.addr
 	hostnames := param.hostNames
