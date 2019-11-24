@@ -1,8 +1,38 @@
-package util
+package goVirtualHost
 
-import (
-	"strings"
-)
+import "strings"
+
+func IsDigits(input string) bool {
+	for i, length := 0, len(input); i < length; i++ {
+		b := input[i]
+		if b < '0' || b > '9' {
+			return false
+		}
+	}
+
+	return true
+}
+
+func ExtractHostname(host string) string {
+	colonIndex := strings.LastIndexByte(host, ':')
+	if colonIndex >= 0 {
+		return host[:colonIndex]
+	}
+	return host
+}
+
+func NormalizeHostNames(inputs []string) []string {
+	output := make([]string, 0, len(inputs))
+
+	for _, str := range inputs {
+		if len(str) > 0 {
+			name := strings.ToLower(str)
+			output = append(output, name)
+		}
+	}
+
+	return output
+}
 
 func getDefaultPort(useTLS bool) string {
 	if useTLS {

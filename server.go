@@ -1,7 +1,6 @@
 package goVirtualHost
 
 import (
-	"./util"
 	"crypto/tls"
 	"net/http"
 )
@@ -21,7 +20,7 @@ func newServer(useTLS bool) *server {
 func (server *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var vhost *vhost
 
-	hostname := util.ExtractHostname(r.Host)
+	hostname := ExtractHostname(r.Host)
 
 	for _, vh := range server.vhosts {
 		if vh.matchHostName(hostname) {
