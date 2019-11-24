@@ -45,5 +45,8 @@ func main() {
 	}
 
 	// start server
-	svc.Open()
+	errors = svc.Open()
+	if len(errors) > 0 {
+		fmt.Println(errors)
+	}
 }

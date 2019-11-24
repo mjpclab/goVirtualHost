@@ -57,54 +57,70 @@ func (svc *Service) Add(host *HostInfo) []error {
 	return errors
 }
 
-func (svc *Service) Open() (errors []error) {
+func (svc *Service) Open() []error {
 	for _, s := range svc.servers {
 		s.updateDefaultVhost()
 		s.updateHttpServerTLSConfig()
 		s.updateHttpServerHandler()
 	}
 
-	errors = []error{}
-	chErr := make(chan error)
+	errors := []error{}
 
-	wgOpen := sync.WaitGroup{}
-	for _, listener := range svc.listeners {
-		wgOpen.Add(1)
-		l := listener
-		go func() {
-			defer wgOpen.Done()
-
-			// start net listener
-			err := l.open()
-			if err != nil {
-				chErr <- err
-				return
-			}
-
-			// start http serve
-			err = l.server.open(l)
-			if err != nil {
-				chErr <- err
-				return
-			}
-
-		}()
-	}
-
-	wgErr := sync.WaitGroup{}
+	// listen
+	chListenErr := make(chan error)
 	go func() {
-		wgErr.Add(1)
-		for err := range chErr {
-			errors = append(errors, err)
+		wg := sync.WaitGroup{}
+		for _, listener := range svc.listeners {
+			wg.Add(1)
+			l := listener
+			go func() {
+				err := l.open()
+				if err != nil {
+					chListenErr <- err
+				}
+				wg.Done()
+			}()
 		}
-		wgErr.Done()
+		wg.Wait()
+		close(chListenErr)
 	}()
 
-	wgOpen.Wait()
-	close(chErr)
-	wgErr.Wait()
+	for err := range chListenErr {
+		errors = append(errors, err)
+	}
 
-	return
+	if len(errors) > 0 {
+		return errors
+	}
+
+	// serve
+	chServeErr := make(chan error)
+	go func() {
+		wg := sync.WaitGroup{}
+		for _, listener := range svc.listeners {
+			wg.Add(1)
+			l := listener
+			go func() {
+				err := l.server.open(l)
+				if err != nil {
+					chServeErr <- err
+				}
+				wg.Done()
+			}()
+		}
+		wg.Wait()
+		close(chServeErr)
+	}()
+
+	for err := range chServeErr {
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return errors
+	}
+
+	return nil
 }
 
 func (svc *Service) Close() {

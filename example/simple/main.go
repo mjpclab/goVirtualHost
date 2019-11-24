@@ -18,7 +18,7 @@ func main() {
 		HostNames: []string{"localhost"},
 		Handler:   http.FileServer(http.Dir(".")),
 	})
-	if len(errors)>0 {
+	if len(errors) > 0 {
 		fmt.Println(errors)
 	}
 
@@ -27,10 +27,13 @@ func main() {
 		Listens: []string{":8080"},
 		Handler: http.FileServer(http.Dir("/tmp")),
 	})
-	if len(errors)>0 {
+	if len(errors) > 0 {
 		fmt.Println(errors)
 	}
 
 	// start server
-	svc.Open()
+	errors = svc.Open()
+	if len(errors) > 0 {
+		fmt.Println(errors)
+	}
 }
