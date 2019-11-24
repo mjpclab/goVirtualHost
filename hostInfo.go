@@ -33,6 +33,12 @@ func (info *HostInfo) toParams() params {
 	}
 
 	for _, listen := range info.Listens {
+		param := info.toParam(listen, info.Cert != nil)
+		param.hostNames = hostNames
+		params = append(params, param)
+	}
+
+	for _, listen := range info.ListensPlain {
 		param := info.toParam(listen, false)
 		param.hostNames = hostNames
 		params = append(params, param)

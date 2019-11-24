@@ -30,6 +30,12 @@ the `HostInfo` is the initial virtual host information, with the properties:
 
 ## Listens []string
 IP and/or port the server listens on, e.g. ":80" or "127.0.0.1:80".
+if `Cert` is present, Serve for TLS HTTP, otherwise Serve for plain HTTP.
+If port is not specified, use "80" as default for Plain HTTP mode, "443" for TLS mode.
+If value contains "/" then treat it as a unix socket file.
+
+## ListensPlain []string
+IP and/or port the server listens on, e.g. ":80" or "127.0.0.1:80".
 Serve for plain HTTP.
 If port is not specified, use "80" as default.
 If value contains "/" then treat it as a unix socket file.

@@ -8,11 +8,12 @@ import (
 
 // init host info
 type HostInfo struct {
-	Listens    []string
-	ListensTLS []string
-	Cert       *tls.Certificate
-	HostNames  []string
-	Handler    http.Handler
+	Listens      []string
+	ListensPlain []string
+	ListensTLS   []string
+	Cert         *tls.Certificate
+	HostNames    []string
+	Handler      http.Handler
 }
 
 // normalized HostInfo Param
