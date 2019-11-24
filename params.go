@@ -1,10 +1,10 @@
 package goVirtualHost
 
-import "errors"
+import "fmt"
 
 func (params params) validate(param *param) error {
 	if param.useTLS && param.cert == nil {
-		return errors.New("certificate not found for TLS listens")
+		return fmt.Errorf("certificate not found for TLS listens: %+v", param)
 	}
 
 	proto := param.proto
@@ -19,11 +19,11 @@ func (params params) validate(param *param) error {
 		ownUseTLS := ownParam.cert != nil
 		inputUseTLS := param.cert != nil
 		if ownUseTLS != inputUseTLS {
-			return errors.New("cannot served for both Plain and TLS mode")
+			return fmt.Errorf("cannot serve for both Plain and TLS mode: %+v", param)
 		}
 
 		if (len(hostnames) == 0 && len(ownParam.hostNames) == 0) || (ownParam.hasHostNames(hostnames)) {
-			return errors.New("duplicated address and hostname")
+			return fmt.Errorf("duplicated address and hostname: %+v", param)
 		}
 	}
 
