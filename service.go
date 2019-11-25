@@ -4,9 +4,9 @@ import "sync"
 
 func NewService() *Service {
 	service := &Service{
-		listeners: []*listener{},
-		servers:   []*server{},
-		vhosts:    []*vhost{},
+		listeners: listeners{},
+		servers:   servers{},
+		vhosts:    vhosts{},
 	}
 
 	return service
@@ -40,10 +40,10 @@ func (svc *Service) addParam(param *param) {
 	server.vhosts = append(server.vhosts, vhost)
 }
 
-func (svc *Service) Add(host *HostInfo) []error {
+func (svc *Service) Add(info *HostInfo) []error {
 	errors := []error{}
 
-	newParams := host.toParams()
+	newParams := info.toParams()
 	for _, newParam := range newParams {
 		err := svc.params.validate(newParam)
 		if err != nil {
