@@ -1,6 +1,8 @@
 package goVirtualHost
 
-import "strings"
+import (
+	"strings"
+)
 
 func IsDigits(input string) bool {
 	for i, length := 0, len(input); i < length; i++ {
@@ -14,6 +16,22 @@ func IsDigits(input string) bool {
 }
 
 func ExtractHostname(host string) string {
+	hostLen := len(host)
+	if hostLen == 0 {
+		return host
+	}
+
+	if hostLen >= 5 && host[0] == '[' { // [IPV6]:port, "[" "ip" "]" ":" "port", 5 parts
+		maxIndex := hostLen - 1
+		closeIndex := strings.IndexByte(host, ']')
+		if closeIndex == maxIndex {
+			return host
+		}
+		if closeIndex > 1 && closeIndex < maxIndex && host[closeIndex+1] == ':' {
+			return host[:closeIndex+1]
+		}
+	}
+
 	colonIndex := strings.LastIndexByte(host, ':')
 	if colonIndex >= 0 {
 		return host[:colonIndex]

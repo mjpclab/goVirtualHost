@@ -16,6 +16,18 @@ func TestExtractHostname(t *testing.T) {
 	if hostname != "example.com" {
 		t.Error(hostname)
 	}
+
+	host = "[fe80::1]"
+	hostname = ExtractHostname(host)
+	if hostname != "[fe80::1]" {
+		t.Error(hostname)
+	}
+
+	host = "[fe80::1]:8080"
+	hostname = ExtractHostname(host)
+	if hostname != "[fe80::1]" {
+		t.Error(hostname)
+	}
 }
 
 func TestNormalizeHostNames(t *testing.T) {
