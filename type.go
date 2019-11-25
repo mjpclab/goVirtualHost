@@ -43,9 +43,7 @@ type server struct {
 	useTLS       bool
 	vhosts       vhosts
 	defaultVhost *vhost
-
-	dispatchHandler http.Handler
-	httpServer      *http.Server
+	httpServer   *http.Server
 }
 
 type servers []*server
