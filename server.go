@@ -20,7 +20,7 @@ func newServer(useTLS bool) *server {
 func (server *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var vhost *vhost
 
-	hostname := ExtractHostname(r.Host)
+	hostname := extractHostName(r.Host)
 
 	for _, vh := range server.vhosts {
 		if vh.matchHostName(hostname) {

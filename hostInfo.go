@@ -3,7 +3,7 @@ package goVirtualHost
 import "crypto/tls"
 
 func (info *HostInfo) toParam(listen string, useTLS bool) *param {
-	proto, addr := SplitListen(listen, false)
+	proto, addr := splitListen(listen, false)
 	var cert *tls.Certificate
 	if useTLS {
 		cert = info.Cert
@@ -23,7 +23,7 @@ func (info *HostInfo) toParam(listen string, useTLS bool) *param {
 func (info *HostInfo) toParams() params {
 	params := params{}
 
-	hostNames := NormalizeHostNames(info.HostNames)
+	hostNames := normalizeHostNames(info.HostNames)
 
 	for _, listen := range info.Listens {
 		param := info.toParam(listen, info.Cert != nil)

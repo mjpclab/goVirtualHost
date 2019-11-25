@@ -4,18 +4,7 @@ import (
 	"strings"
 )
 
-func IsDigits(input string) bool {
-	for i, length := 0, len(input); i < length; i++ {
-		b := input[i]
-		if b < '0' || b > '9' {
-			return false
-		}
-	}
-
-	return true
-}
-
-func ExtractHostname(host string) string {
+func extractHostName(host string) string {
 	hostLen := len(host)
 	if hostLen == 0 {
 		return host
@@ -39,7 +28,7 @@ func ExtractHostname(host string) string {
 	return host
 }
 
-func NormalizeHostNames(inputs []string) []string {
+func normalizeHostNames(inputs []string) []string {
 	output := make([]string, 0, len(inputs))
 
 	for _, str := range inputs {
@@ -60,7 +49,18 @@ func getDefaultPort(useTLS bool) string {
 	}
 }
 
-func SplitListen(listen string, useTLS bool) (proto, addr string) {
+func isDigits(input string) bool {
+	for i, length := 0, len(input); i < length; i++ {
+		b := input[i]
+		if b < '0' || b > '9' {
+			return false
+		}
+	}
+
+	return true
+}
+
+func splitListen(listen string, useTLS bool) (proto, addr string) {
 	// empty, use default tcp port
 	if len(listen) == 0 {
 		return "tcp", getDefaultPort(useTLS)
@@ -72,7 +72,7 @@ func SplitListen(listen string, useTLS bool) (proto, addr string) {
 	}
 
 	// port
-	if IsDigits(listen) {
+	if isDigits(listen) {
 		return "tcp", ":" + listen
 	}
 

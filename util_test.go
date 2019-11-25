@@ -6,25 +6,25 @@ func TestExtractHostname(t *testing.T) {
 	var host, hostname string
 
 	host = "example.com"
-	hostname = ExtractHostname(host)
+	hostname = extractHostName(host)
 	if hostname != "example.com" {
 		t.Error(hostname)
 	}
 
 	host = "example.com:8080"
-	hostname = ExtractHostname(host)
+	hostname = extractHostName(host)
 	if hostname != "example.com" {
 		t.Error(hostname)
 	}
 
 	host = "[fe80::1]"
-	hostname = ExtractHostname(host)
+	hostname = extractHostName(host)
 	if hostname != "[fe80::1]" {
 		t.Error(hostname)
 	}
 
 	host = "[fe80::1]:8080"
-	hostname = ExtractHostname(host)
+	hostname = extractHostName(host)
 	if hostname != "[fe80::1]" {
 		t.Error(hostname)
 	}
@@ -32,7 +32,7 @@ func TestExtractHostname(t *testing.T) {
 
 func TestNormalizeHostNames(t *testing.T) {
 	inputs := []string{"aA", "", "Bb"}
-	results := NormalizeHostNames(inputs)
+	results := normalizeHostNames(inputs)
 	if len(results) != 2 || results[0] != "aa" || results[1] != "bb" {
 		t.Error(results)
 	}
@@ -44,7 +44,7 @@ func TestSplitListen(t *testing.T) {
 	// ipv4
 	ipv4 := "1.2.3.4"
 
-	proto, ipv4Http := SplitListen(ipv4, false)
+	proto, ipv4Http := splitListen(ipv4, false)
 	if proto != "tcp4" {
 		t.Error(proto)
 	}
@@ -52,7 +52,7 @@ func TestSplitListen(t *testing.T) {
 		t.Error(ipv4Http)
 	}
 
-	proto, ipv4Https := SplitListen(ipv4, true)
+	proto, ipv4Https := splitListen(ipv4, true)
 	if proto != "tcp4" {
 		t.Error(proto)
 	}
@@ -63,7 +63,7 @@ func TestSplitListen(t *testing.T) {
 	// ipv4:port
 	ipv4Port := "2.3.4.5:6"
 
-	proto, ipv4PortHttp := SplitListen(ipv4Port, false)
+	proto, ipv4PortHttp := splitListen(ipv4Port, false)
 	if proto != "tcp4" {
 		t.Error(proto)
 	}
@@ -71,7 +71,7 @@ func TestSplitListen(t *testing.T) {
 		t.Error(ipv4PortHttp)
 	}
 
-	proto, ipv4PortHttps := SplitListen(ipv4Port, true)
+	proto, ipv4PortHttps := splitListen(ipv4Port, true)
 	if proto != "tcp4" {
 		t.Error(proto)
 	}
@@ -82,7 +82,7 @@ func TestSplitListen(t *testing.T) {
 	// ipv6
 	ipv6 := "[::1]"
 
-	proto, ipv6Http := SplitListen(ipv6, false)
+	proto, ipv6Http := splitListen(ipv6, false)
 	if proto != "tcp6" {
 		t.Error(proto)
 	}
@@ -90,7 +90,7 @@ func TestSplitListen(t *testing.T) {
 		t.Error(ipv6Http)
 	}
 
-	proto, ipv6Https := SplitListen(ipv6, true)
+	proto, ipv6Https := splitListen(ipv6, true)
 	if proto != "tcp6" {
 		t.Error(proto)
 	}
@@ -101,7 +101,7 @@ func TestSplitListen(t *testing.T) {
 	// ipv6:port
 	ipv6Port := "[fe80::1234]:7"
 
-	proto, ipv6PortHttp := SplitListen(ipv6Port, false)
+	proto, ipv6PortHttp := splitListen(ipv6Port, false)
 	if proto != "tcp6" {
 		t.Error(proto)
 	}
@@ -109,7 +109,7 @@ func TestSplitListen(t *testing.T) {
 		t.Error(ipv6PortHttp)
 	}
 
-	proto, ipv6PortHttps := SplitListen(ipv6Port, true)
+	proto, ipv6PortHttps := splitListen(ipv6Port, true)
 	if proto != "tcp6" {
 		t.Error(proto)
 	}
@@ -120,7 +120,7 @@ func TestSplitListen(t *testing.T) {
 	// port
 	portNum := "8080"
 
-	proto, portNumHttp := SplitListen(portNum, false)
+	proto, portNumHttp := splitListen(portNum, false)
 	if proto != "tcp" {
 		t.Error(proto)
 	}
@@ -128,7 +128,7 @@ func TestSplitListen(t *testing.T) {
 		t.Error(portNumHttp)
 	}
 
-	proto, portNumHttps := SplitListen(portNum, true)
+	proto, portNumHttps := splitListen(portNum, true)
 	if proto != "tcp" {
 		t.Error(proto)
 	}
@@ -139,7 +139,7 @@ func TestSplitListen(t *testing.T) {
 	// :port
 	port := ":3000"
 
-	proto, portHttp := SplitListen(port, false)
+	proto, portHttp := splitListen(port, false)
 	if proto != "tcp" {
 		t.Error(proto)
 	}
@@ -147,7 +147,7 @@ func TestSplitListen(t *testing.T) {
 		t.Error(portHttp)
 	}
 
-	proto, portHttps := SplitListen(port, true)
+	proto, portHttps := splitListen(port, true)
 	if proto != "tcp" {
 		t.Error(proto)
 	}
@@ -158,7 +158,7 @@ func TestSplitListen(t *testing.T) {
 	// hostname
 	hostname := "example.com"
 
-	proto, hostnameHttp := SplitListen(hostname, false)
+	proto, hostnameHttp := splitListen(hostname, false)
 	if proto != "tcp" {
 		t.Error(proto)
 	}
@@ -166,7 +166,7 @@ func TestSplitListen(t *testing.T) {
 		t.Error(hostnameHttp)
 	}
 
-	proto, hostnameHttps := SplitListen(hostname, true)
+	proto, hostnameHttps := splitListen(hostname, true)
 	if proto != "tcp" {
 		t.Error(proto)
 	}
@@ -177,7 +177,7 @@ func TestSplitListen(t *testing.T) {
 	// hostname:port
 	host := "example.com:3210"
 
-	proto, hostHttp := SplitListen(host, false)
+	proto, hostHttp := splitListen(host, false)
 	if proto != "tcp" {
 		t.Error(proto)
 	}
@@ -185,7 +185,7 @@ func TestSplitListen(t *testing.T) {
 		t.Error(hostHttp)
 	}
 
-	proto, hostHttps := SplitListen(host, true)
+	proto, hostHttps := splitListen(host, true)
 	if proto != "tcp" {
 		t.Error(proto)
 	}
