@@ -17,7 +17,7 @@ func main() {
 	// virtual host: localhost
 	certLocalhost, err := tls.LoadX509KeyPair("example/tls/localhost.crt", "example/tls/localhost.key")
 	if err != nil {
-		fmt.Println(errors)
+		fmt.Println(err)
 	}
 	errors = svc.Add(&goVirtualHost.HostInfo{
 		Listens:   []string{":8080"},
@@ -32,7 +32,7 @@ func main() {
 	// virtual host: default
 	certExample, err := tls.LoadX509KeyPair("example/tls/example.crt", "example/tls/example.key")
 	if err != nil {
-		fmt.Println(errors)
+		fmt.Println(err)
 	}
 	errors = svc.Add(&goVirtualHost.HostInfo{
 		Listens:   []string{":8080"},
