@@ -41,6 +41,9 @@ func (svc *Service) addParam(param *param) {
 }
 
 func (svc *Service) Add(info *HostInfo) []error {
+	svc.mu.Lock()
+	defer svc.mu.Unlock()
+
 	errors := []error{}
 
 	newParams := info.toParams()
@@ -57,17 +60,9 @@ func (svc *Service) Add(info *HostInfo) []error {
 	return errors
 }
 
-func (svc *Service) Open() []error {
-	for _, s := range svc.servers {
-		s.updateDefaultVhost()
-		s.updateHttpServerTLSConfig()
-		s.updateHttpServerHandler()
-	}
-
-	errors := []error{}
-
-	// listen
+func (svc *Service) openListeners() (errors []error) {
 	chListenErr := make(chan error)
+
 	go func() {
 		wg := sync.WaitGroup{}
 		for _, listener := range svc.listeners {
@@ -89,12 +84,12 @@ func (svc *Service) Open() []error {
 		errors = append(errors, err)
 	}
 
-	if len(errors) > 0 {
-		return errors
-	}
+	return
+}
 
-	// serve
+func (svc *Service) openServers(cbAllArranged func()) (errors []error) {
 	chServeErr := make(chan error)
+
 	go func() {
 		wg := sync.WaitGroup{}
 		for _, listener := range svc.listeners {
@@ -108,6 +103,7 @@ func (svc *Service) Open() []error {
 				wg.Done()
 			}()
 		}
+		cbAllArranged()
 		wg.Wait()
 		close(chServeErr)
 	}()
@@ -116,6 +112,25 @@ func (svc *Service) Open() []error {
 		errors = append(errors, err)
 	}
 
+	return
+}
+
+func (svc *Service) Open() (errors []error) {
+	svc.mu.Lock()
+
+	for _, s := range svc.servers {
+		s.updateDefaultVhost()
+		s.updateHttpServerTLSConfig()
+		s.updateHttpServerHandler()
+	}
+
+	errors = svc.openListeners()
+	if len(errors) > 0 {
+		svc.mu.Unlock()
+		return errors
+	}
+
+	errors = svc.openServers(svc.mu.Unlock)
 	if len(errors) > 0 {
 		return errors
 	}
@@ -124,6 +139,9 @@ func (svc *Service) Open() []error {
 }
 
 func (svc *Service) Close() {
+	svc.mu.Lock()
+	defer svc.mu.Unlock()
+
 	wg := sync.WaitGroup{}
 	for _, listener := range svc.listeners {
 		wg.Add(1)

@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"net"
 	"net/http"
+	"sync"
 )
 
 // init host info
@@ -59,6 +60,7 @@ type vhosts []*vhost
 
 // service
 type Service struct {
+	mu        sync.Mutex
 	params    params
 	listeners listeners
 	servers   servers
