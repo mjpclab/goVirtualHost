@@ -25,6 +25,9 @@ svc.Add(&goVirtualHost.HostInfo{
 svc.Open()
 ```
 
+# NewService(&HostInfo) *Service
+`NewService` returns a service that manages multiple virtual hosts.
+
 # HostInfo
 the `HostInfo` is the initial virtual host information, with the properties:
 
@@ -67,6 +70,13 @@ otherwise use the first virtual host.
 
 ## Handler http.Handler
 `http.Handler` to handle requests. Could be a `http.ServeMux`.
+
+# *Service.Open() []error
+Start listening on network ports, and serve for http requests. The method will not return until all servers are closed.
+e.g. call `Close` method on another goroutine.
+
+# *Service.Close()
+Stop serving. To restart serving, a new `Service` must be created.
 
 # Architecture & Internals
 ```
