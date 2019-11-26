@@ -147,7 +147,9 @@ func (svc *Service) Close() {
 		wg.Add(1)
 		l := listener
 		go func() {
-			l.server.close()
+			if l.server != nil {
+				l.server.close()
+			}
 			l.close()
 			wg.Done()
 		}()
