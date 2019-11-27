@@ -56,17 +56,17 @@ func (svc *Service) Add(info *HostInfo) (errs []error) {
 	}
 
 	newParams := info.toParams()
-	for _, newParam := range newParams {
-		err := svc.params.validate(newParam)
-		if err != nil {
-			errs = append(errs, err)
-			continue
-		}
+	es := svc.params.validate(newParams)
+	if len(es) > 0 {
+		errs = append(errs, es...)
+		return
+	}
 
+	for _, newParam := range newParams {
 		svc.addParam(newParam)
 	}
 
-	return errs
+	return
 }
 
 func (svc *Service) openListeners() (errs []error) {
