@@ -59,8 +59,18 @@ type vhost struct {
 type vhosts []*vhost
 
 // service
+
+type state int
+
+const (
+	statePrepare state = iota
+	stateOpened
+	stateClosed
+)
+
 type Service struct {
 	mu        sync.Mutex
+	state     state
 	params    params
 	listeners listeners
 	servers   servers

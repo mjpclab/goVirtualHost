@@ -1,9 +1,15 @@
 package goVirtualHost
 
-import "sync"
+import (
+	"errors"
+	"sync"
+)
+
+var alreadyOpened = errors.New("already opened")
 
 func NewService() *Service {
 	service := &Service{
+		state:     statePrepare,
 		listeners: listeners{},
 		servers:   servers{},
 		vhosts:    vhosts{},
@@ -43,6 +49,11 @@ func (svc *Service) addParam(param *param) {
 func (svc *Service) Add(info *HostInfo) (errs []error) {
 	svc.mu.Lock()
 	defer svc.mu.Unlock()
+
+	if svc.state > statePrepare {
+		errs = append(errs, alreadyOpened)
+		return
+	}
 
 	newParams := info.toParams()
 	for _, newParam := range newParams {
@@ -85,7 +96,7 @@ func (svc *Service) openListeners() (errs []error) {
 	return
 }
 
-func (svc *Service) openServers(cbAllArranged func()) (errs []error) {
+func (svc *Service) openServers() (errs []error) {
 	chServeErr := make(chan error)
 
 	go func() {
@@ -101,7 +112,6 @@ func (svc *Service) openServers(cbAllArranged func()) (errs []error) {
 				wg.Done()
 			}()
 		}
-		cbAllArranged()
 		wg.Wait()
 		close(chServeErr)
 	}()
@@ -115,6 +125,13 @@ func (svc *Service) openServers(cbAllArranged func()) (errs []error) {
 
 func (svc *Service) Open() (errs []error) {
 	svc.mu.Lock()
+	if svc.state >= stateOpened {
+		svc.mu.Unlock()
+		errs = append(errs, alreadyOpened)
+		return
+	}
+	svc.state = stateOpened
+	svc.mu.Unlock()
 
 	for _, s := range svc.servers {
 		s.updateDefaultVhost()
@@ -124,11 +141,10 @@ func (svc *Service) Open() (errs []error) {
 
 	errs = svc.openListeners()
 	if len(errs) > 0 {
-		svc.mu.Unlock()
 		return errs
 	}
 
-	errs = svc.openServers(svc.mu.Unlock)
+	errs = svc.openServers()
 	if len(errs) > 0 {
 		return errs
 	}
@@ -138,7 +154,12 @@ func (svc *Service) Open() (errs []error) {
 
 func (svc *Service) Close() {
 	svc.mu.Lock()
-	defer svc.mu.Unlock()
+	if svc.state >= stateClosed {
+		svc.mu.Unlock()
+		return
+	}
+	svc.state = stateClosed
+	svc.mu.Unlock()
 
 	wg := sync.WaitGroup{}
 	for _, listener := range svc.listeners {
