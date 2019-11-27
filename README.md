@@ -4,7 +4,7 @@ goVirtualHost: An easy way to setup HTTP virtual hosts.
 Minimal required Go version is 1.9.
 
 # Quick Example
-Two virtual hosts both listen on :8080, but with different hostname, serve for different directories:
+Two virtual hosts listen on both :8080, but with different hostname, serve for different directories:
 ```go
 svc := goVirtualHost.NewService()
 
@@ -25,8 +25,8 @@ svc.Add(&goVirtualHost.HostInfo{
 svc.Open()
 ```
 
-# NewService(&HostInfo) *Service
-`NewService` returns a service that manages multiple virtual hosts.
+# NewService(*HostInfo) *Service
+`NewService` returns a service instance that manages multiple virtual hosts.
 
 # HostInfo
 the `HostInfo` is the initial virtual host information, with the properties:
@@ -69,7 +69,8 @@ server will try to use first virtual host that has no hostname,
 otherwise use the first virtual host.
 
 ## Handler http.Handler
-`http.Handler` to handle requests. Could be a `http.ServeMux`.
+`http.Handler` to handle requests.
+Could be an instance of `http.ServeMux`, `httputil.ReverseProxy`, or any other type that implements `http.Handler`.
 
 # *Service.Open() []error
 Start listening on network ports, and serve for http requests. The method will not return until all servers are closed.
