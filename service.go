@@ -141,15 +141,12 @@ func (svc *Service) Open() (errs []error) {
 
 	errs = svc.openListeners()
 	if len(errs) > 0 {
-		return errs
+		svc.Close()
+		return
 	}
 
 	errs = svc.openServers()
-	if len(errs) > 0 {
-		return errs
-	}
-
-	return nil
+	return
 }
 
 func (svc *Service) Close() {

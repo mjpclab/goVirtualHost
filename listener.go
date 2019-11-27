@@ -33,6 +33,10 @@ func (listener *listener) open() error {
 }
 
 func (listener *listener) close() error {
+	if listener.netListener == nil {
+		return nil
+	}
+
 	err := listener.netListener.Close()
 	listener.netListener = nil
 	return err
