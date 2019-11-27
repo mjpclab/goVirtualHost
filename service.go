@@ -139,9 +139,10 @@ func (svc *Service) Open() (errs []error) {
 		s.updateHttpServerHandler()
 	}
 
+	defer svc.Close()
+
 	errs = svc.openListeners()
 	if len(errs) > 0 {
-		svc.Close()
 		return
 	}
 
