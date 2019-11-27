@@ -40,27 +40,25 @@ func (svc *Service) addParam(param *param) {
 	server.vhosts = append(server.vhosts, vhost)
 }
 
-func (svc *Service) Add(info *HostInfo) []error {
+func (svc *Service) Add(info *HostInfo) (errs []error) {
 	svc.mu.Lock()
 	defer svc.mu.Unlock()
-
-	errors := []error{}
 
 	newParams := info.toParams()
 	for _, newParam := range newParams {
 		err := svc.params.validate(newParam)
 		if err != nil {
-			errors = append(errors, err)
+			errs = append(errs, err)
 			continue
 		}
 
 		svc.addParam(newParam)
 	}
 
-	return errors
+	return errs
 }
 
-func (svc *Service) openListeners() (errors []error) {
+func (svc *Service) openListeners() (errs []error) {
 	chListenErr := make(chan error)
 
 	go func() {
@@ -81,13 +79,13 @@ func (svc *Service) openListeners() (errors []error) {
 	}()
 
 	for err := range chListenErr {
-		errors = append(errors, err)
+		errs = append(errs, err)
 	}
 
 	return
 }
 
-func (svc *Service) openServers(cbAllArranged func()) (errors []error) {
+func (svc *Service) openServers(cbAllArranged func()) (errs []error) {
 	chServeErr := make(chan error)
 
 	go func() {
@@ -109,13 +107,13 @@ func (svc *Service) openServers(cbAllArranged func()) (errors []error) {
 	}()
 
 	for err := range chServeErr {
-		errors = append(errors, err)
+		errs = append(errs, err)
 	}
 
 	return
 }
 
-func (svc *Service) Open() (errors []error) {
+func (svc *Service) Open() (errs []error) {
 	svc.mu.Lock()
 
 	for _, s := range svc.servers {
@@ -124,15 +122,15 @@ func (svc *Service) Open() (errors []error) {
 		s.updateHttpServerHandler()
 	}
 
-	errors = svc.openListeners()
-	if len(errors) > 0 {
+	errs = svc.openListeners()
+	if len(errs) > 0 {
 		svc.mu.Unlock()
-		return errors
+		return errs
 	}
 
-	errors = svc.openServers(svc.mu.Unlock)
-	if len(errors) > 0 {
-		return errors
+	errs = svc.openServers(svc.mu.Unlock)
+	if len(errs) > 0 {
+		return errs
 	}
 
 	return nil
