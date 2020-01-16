@@ -53,15 +53,9 @@ If port is not specified, use "443" as default.
 If value contains "/" then treat it as a unix socket file.
 
 ## Cert *tls.Certificate
-TLS Certificate supplied for TLS mode. To load from external PEM files, use:
+TLS Certificate supplied for TLS mode. A helper function can be used to load from external PEM files:
 ```go
-func getCert(certFile, keyFile string) *tls.Certificate {
-    cert, err := tls.LoadX509KeyPair(certFile, keyFile)
-    if err !=nil {
-        return nil
-    }
-    return &cert
-}
+func LoadCertificate(certFile, keyFile string) (*tls.Certificate, error)
 ```
 
 ## HostNames []string

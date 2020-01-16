@@ -2,7 +2,6 @@ package main
 
 import (
 	goVirtualHost "../.."
-	"crypto/tls"
 	"fmt"
 	"net/http"
 )
@@ -15,13 +14,13 @@ func main() {
 	svc := goVirtualHost.NewService()
 
 	// virtual host: localhost
-	certLocalhost, err := tls.LoadX509KeyPair("example/tls/localhost.crt", "example/tls/localhost.key")
+	certLocalhost, err := goVirtualHost.LoadCertificate("example/tls/localhost.crt", "example/tls/localhost.key")
 	if err != nil {
 		fmt.Println(err)
 	}
 	errors = svc.Add(&goVirtualHost.HostInfo{
 		Listens:   []string{":8080"},
-		Cert:      &certLocalhost,
+		Cert:      certLocalhost,
 		HostNames: []string{"localhost"},
 		Handler:   http.FileServer(http.Dir(".")),
 	})
@@ -30,13 +29,13 @@ func main() {
 	}
 
 	// virtual host: default
-	certExample, err := tls.LoadX509KeyPair("example/tls/example.crt", "example/tls/example.key")
+	certExample, err := goVirtualHost.LoadCertificate("example/tls/example.crt", "example/tls/example.key")
 	if err != nil {
 		fmt.Println(err)
 	}
 	errors = svc.Add(&goVirtualHost.HostInfo{
 		Listens:   []string{":8080"},
-		Cert:      &certExample,
+		Cert:      certExample,
 		HostNames: nil,
 		Handler:   http.FileServer(http.Dir("/tmp")),
 	})
