@@ -61,6 +61,7 @@ func LoadCertificate(certFile, keyFile string) (*tls.Certificate, error)
 ## HostNames []string
 Specify hostnames associated with the virtual host.
 If hostname starts with ".", treat it as a suffix, to match all levels of sub domains, e.g. ".example.com".
+If hostname ends with ".", treat it as a prefix, to match all levels of suffix domains, e.g. "192.168.1.".
 If request host name does not match any virtual host,
 server will try to use first virtual host that has no hostname,
 otherwise use the first virtual host.
