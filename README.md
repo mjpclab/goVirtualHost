@@ -1,7 +1,7 @@
 # goVirtualHost
 goVirtualHost: An easy way to setup HTTP virtual hosts.
 
-Minimal required Go version is 1.9.
+Minimal required Go version is 1.14.
 
 # Quick Example
 Two virtual hosts listen on both :8080, but with different hostname, serve for different directories:

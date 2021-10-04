@@ -62,7 +62,6 @@ func (server *server) updateHttpServerTLSConfig() {
 		tlsConfig = &tls.Config{
 			Certificates: certs,
 		}
-		tlsConfig.BuildNameToCertificate()
 	}
 
 	server.httpServer.TLSConfig = tlsConfig
