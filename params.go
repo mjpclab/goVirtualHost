@@ -39,12 +39,12 @@ func (params params) validate(inputs params) (errs []error) {
 			errs = append(errs, es...)
 		}
 
-		es = params.validateParam(p)
+		es = inputs.validateParam(p)
 		if len(es) > 0 {
 			errs = append(errs, es...)
 		}
 
-		es = inputs.validateParam(p)
+		es = params.validateParam(p)
 		if len(es) > 0 {
 			errs = append(errs, es...)
 		}
