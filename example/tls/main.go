@@ -14,7 +14,7 @@ func main() {
 	svc := goVirtualHost.NewService()
 
 	// virtual host: localhost
-	certLocalhost, err := goVirtualHost.LoadCertificate("example/tls/localhost.crt", "example/tls/localhost.key")
+	certLocalhost, err := goVirtualHost.LoadCertificate("localhost.crt", "localhost.key")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -29,7 +29,7 @@ func main() {
 	}
 
 	// virtual host: default
-	certExample, err := goVirtualHost.LoadCertificate("example/tls/example.crt", "example/tls/example.key")
+	certExample, err := goVirtualHost.LoadCertificate("example.crt", "example.key")
 	if err != nil {
 		fmt.Println(err)
 	}
