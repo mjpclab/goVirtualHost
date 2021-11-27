@@ -8,9 +8,9 @@ func (params params) validateParam(param *param) (errs []error) {
 			continue
 		}
 
-		if ownParam.port == param.port && ownParam.proto != "unix" && param.proto != "unix" {
-			if (ownParam.proto == "tcp" && ownParam.ip == "") ||
-				(param.proto == "tcp" && param.ip == "") ||
+		if ownParam.port == param.port && ownParam.proto != unix && param.proto != unix {
+			if (ownParam.proto == tcp46 && ownParam.ip == "") ||
+				(param.proto == tcp46 && param.ip == "") ||
 				(ownParam.proto == param.proto && (ownParam.ip == "" || param.ip == "")) {
 				err := fmt.Errorf("conflict IP address: %+v, %+v", ownParam, param)
 				errs = append(errs, err)
