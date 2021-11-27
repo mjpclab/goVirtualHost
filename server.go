@@ -18,22 +18,15 @@ func newServer(useTLS bool) *server {
 }
 
 func (server *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var vhost *vhost
-
 	hostname := extractHostName(r.Host)
-
-	for _, vh := range server.vhosts {
-		if vh.matchHostName(hostname) {
-			vhost = vh
-			break
+	for i := range server.vhosts {
+		if server.vhosts[i].matchHostName(hostname) {
+			server.vhosts[i].handler.ServeHTTP(w, r)
+			return
 		}
 	}
 
-	if vhost == nil {
-		vhost = server.defaultVhost
-	}
-
-	vhost.handler.ServeHTTP(w, r)
+	server.defaultVhost.handler.ServeHTTP(w, r)
 }
 
 func (server *server) updateDefaultVhost() {
