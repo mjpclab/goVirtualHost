@@ -20,7 +20,8 @@ type HostInfo struct {
 // normalized HostInfo Param
 type param struct {
 	proto     string
-	addr      string
+	ip        string
+	port      string
 	useTLS    bool
 	cert      *tls.Certificate
 	hostNames []string
@@ -32,7 +33,8 @@ type params []*param
 // wrapper of net.Listener
 type listener struct {
 	proto       string
-	addr        string
+	ip          string
+	port        string
 	netListener net.Listener
 	server      *server
 }

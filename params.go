@@ -4,7 +4,7 @@ import "fmt"
 
 func (params params) validateParam(param *param) (errs []error) {
 	proto := param.proto
-	addr := param.addr
+	addr := param.ip
 	hostnames := param.hostNames
 
 	for _, ownParam := range params {
@@ -12,7 +12,7 @@ func (params params) validateParam(param *param) (errs []error) {
 			continue
 		}
 
-		if ownParam.proto != proto || ownParam.addr != addr {
+		if ownParam.proto != proto || ownParam.ip != addr {
 			continue
 		}
 

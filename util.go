@@ -60,25 +60,25 @@ func isDigits(input string) bool {
 	return true
 }
 
-func splitListen(listen string, useTLS bool) (proto, addr string) {
+func splitListen(listen string, useTLS bool) (l43proto, ip, port string) {
 	// empty, use default tcp port
 	if len(listen) == 0 {
-		return "tcp", getDefaultPort(useTLS)
+		return "tcp", "", getDefaultPort(useTLS)
 	}
 
 	// :port
 	if listen[0] == ':' {
-		return "tcp", listen
+		return "tcp", "", listen
 	}
 
 	// port
 	if isDigits(listen) {
-		return "tcp", ":" + listen
+		return "tcp", "", ":" + listen
 	}
 
 	// unix socket path
 	if strings.IndexByte(listen, '/') >= 0 {
-		return "unix", listen
+		return "unix", "", listen
 	}
 
 	colonIndex := strings.IndexByte(listen, ':')
@@ -88,10 +88,10 @@ func splitListen(listen string, useTLS bool) (proto, addr string) {
 	squareEnd := strings.IndexByte(listen, ']')
 	isIPv6 := listen[0] == '[' && squareEnd > 0 && colonIndex > 0 && colonIndex < squareEnd
 	if isIPv6 {
-		if lastColonIndex > squareEnd { // has port number
-			return "tcp6", listen
+		if lastColonIndex == squareEnd+1 { // has port number
+			return "tcp6", listen[:lastColonIndex], listen[lastColonIndex:]
 		}
-		return "tcp6", listen + getDefaultPort(useTLS)
+		return "tcp6", listen, getDefaultPort(useTLS)
 	}
 
 	// ipv4
@@ -105,16 +105,16 @@ func splitListen(listen string, useTLS bool) (proto, addr string) {
 		(lastColonIndex == -1 || lastColonIndex > lastDotIndex+1)
 	if isIPv4 {
 		if colonIndex >= 0 { // has port number
-			return "tcp4", listen
+			return "tcp4", listen[:colonIndex], listen[colonIndex:]
 		}
-		return "tcp4", listen + getDefaultPort(useTLS)
+		return "tcp4", listen, getDefaultPort(useTLS)
 	}
 
 	// suppose to be a domain with port
 	if colonIndex >= 0 {
-		return "tcp", listen
+		return "tcp", listen[:colonIndex], listen[colonIndex:]
 	}
 
 	// suppose to be a domain
-	return "tcp", listen + getDefaultPort(useTLS)
+	return "tcp", listen, getDefaultPort(useTLS)
 }

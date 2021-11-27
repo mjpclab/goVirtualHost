@@ -26,12 +26,12 @@ func (svc *Service) addParam(param *param) {
 	var listener *listener
 	var server *server
 
-	listener = svc.listeners.find(param.proto, param.addr)
+	listener = svc.listeners.find(param.proto, param.ip, param.port)
 	if listener != nil {
 		server = listener.server
 	} else {
 		server = newServer(param.useTLS)
-		listener = newListener(param.proto, param.addr)
+		listener = newListener(param.proto, param.ip, param.port)
 		listener.server = server
 
 		svc.listeners = append(svc.listeners, listener)
