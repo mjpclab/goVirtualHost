@@ -2,6 +2,7 @@ package goVirtualHost
 
 import (
 	"crypto/tls"
+	"errors"
 	"testing"
 )
 
@@ -44,6 +45,8 @@ func TestParamsValidateParam(t *testing.T) {
 	errs = ps.validateParam(p)
 	if len(errs) == 0 {
 		t.Error()
+	} else if !errors.Is(errs[0], ConflictIPAddress) {
+		t.Error()
 	}
 
 	// IPv6 wildcard [::]:port, conflict
@@ -55,25 +58,39 @@ func TestParamsValidateParam(t *testing.T) {
 	errs = ps.validateParam(p)
 	if len(errs) == 0 {
 		t.Error()
+	} else if !errors.Is(errs[0], ConflictIPAddress) {
+		t.Error()
 	}
+
 	p.ip = "[::0]"
 	errs = ps.validateParam(p)
 	if len(errs) == 0 {
 		t.Error()
+	} else if !errors.Is(errs[0], ConflictIPAddress) {
+		t.Error()
 	}
+
 	p.ip = "[0::0]"
 	errs = ps.validateParam(p)
 	if len(errs) == 0 {
 		t.Error()
+	} else if !errors.Is(errs[0], ConflictIPAddress) {
+		t.Error()
 	}
+
 	p.ip = "[00::00]"
 	errs = ps.validateParam(p)
 	if len(errs) == 0 {
 		t.Error()
+	} else if !errors.Is(errs[0], ConflictIPAddress) {
+		t.Error()
 	}
+
 	p.ip = "[0000:0000:0000:0000:0000:0000:0000:0000]"
 	errs = ps.validateParam(p)
 	if len(errs) == 0 {
+		t.Error()
+	} else if !errors.Is(errs[0], ConflictIPAddress) {
 		t.Error()
 	}
 
@@ -86,6 +103,8 @@ func TestParamsValidateParam(t *testing.T) {
 	}
 	errs = ps.validateParam(p)
 	if len(errs) == 0 {
+		t.Error()
+	} else if !errors.Is(errs[0], DuplicatedAddressHostname) {
 		t.Error()
 	}
 
@@ -100,5 +119,7 @@ func TestParamsValidateParam(t *testing.T) {
 	errs = ps.validateParam(p)
 	if len(errs) == 0 {
 		t.Error(errs)
+	} else if !errors.Is(errs[0], ConflictTLSMode) {
+		t.Error()
 	}
 }

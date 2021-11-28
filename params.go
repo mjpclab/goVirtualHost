@@ -1,6 +1,13 @@
 package goVirtualHost
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+var ConflictIPAddress = errors.New("conflict IP address")
+var ConflictTLSMode = errors.New("cannot serve for both Plain and TLS mode")
+var DuplicatedAddressHostname = errors.New("duplicated address and hostname")
 
 func (params params) validateParam(param *param) (errs []error) {
 	for _, ownParam := range params {
@@ -12,7 +19,7 @@ func (params params) validateParam(param *param) (errs []error) {
 			if (ownParam.proto == tcp46 && ownParam.ip == "") ||
 				(param.proto == tcp46 && param.ip == "") ||
 				(ownParam.proto == param.proto && (ownParam.ip == "" || param.ip == "")) {
-				err := fmt.Errorf("conflict IP address: %+v, %+v", ownParam, param)
+				err := wrapError(ConflictIPAddress, fmt.Sprintf("conflict IP address: %+v, %+v", ownParam, param))
 				errs = append(errs, err)
 			}
 		}
@@ -21,12 +28,12 @@ func (params params) validateParam(param *param) (errs []error) {
 			ownUseTLS := ownParam.cert != nil
 			useTLS := param.cert != nil
 			if ownUseTLS != useTLS {
-				err := fmt.Errorf("cannot serve for both Plain and TLS mode: %+v", param)
+				err := wrapError(ConflictTLSMode, fmt.Sprintf("cannot serve for both Plain and TLS mode: %+v, %+v", ownParam, param))
 				errs = append(errs, err)
 			}
 
 			if (len(param.hostNames) == 0 && len(ownParam.hostNames) == 0) || (ownParam.hasHostNames(param.hostNames)) {
-				err := fmt.Errorf("duplicated address and hostname: %+v", param)
+				err := wrapError(DuplicatedAddressHostname, fmt.Sprintf("duplicated address and hostname: %+v, %+v", ownParam, param))
 				errs = append(errs, err)
 			}
 		}

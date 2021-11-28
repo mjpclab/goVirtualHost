@@ -30,6 +30,26 @@ svc.Open()
 
 # (*Service) Add(*HostInfo) []error
 Adding a new virtual host information to the `Service`.
+You can use `errors.Is()` to test possible errors:
+
+- `CertificateNotFound`
+
+Intent to work on TLS mode, but certificate is not provided.
+
+- `ConflictIPAddress`
+
+One Virtual host tries to listen on a specific IP address and port,
+while another virtual host tries to listen on a wildcard IP(e.g. "0.0.0.0") of same port.
+
+- `ConflictTLSMode`
+
+For a specific listening endpoint(IP:port or socket),
+one virtual host works on plain mode,
+while another virtual host works on TLS mode.
+
+- `DuplicatedAddressHostname`
+
+Two virtual hosts listen on same endpoint, they use the same hostname.
 
 # HostInfo
 the `HostInfo` is the initial virtual host information, with the properties:

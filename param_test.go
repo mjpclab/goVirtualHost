@@ -2,6 +2,7 @@ package goVirtualHost
 
 import (
 	"crypto/tls"
+	"errors"
 	"testing"
 )
 
@@ -22,6 +23,8 @@ func TestParamValidate(t *testing.T) {
 	p.useTLS = true
 	errs = p.validate()
 	if len(errs) == 0 {
+		t.Error()
+	} else if !errors.Is(errs[0], CertificateNotFound) {
 		t.Error()
 	}
 
