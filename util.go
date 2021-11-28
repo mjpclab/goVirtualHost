@@ -88,10 +88,18 @@ func splitListen(listen string, useTLS bool) (l43proto, ip, port string) {
 	squareEnd := strings.IndexByte(listen, ']')
 	isIPv6 := listen[0] == '[' && squareEnd > 0 && colonIndex > 0 && colonIndex < squareEnd
 	if isIPv6 {
+		var ip, port string
 		if lastColonIndex == squareEnd+1 { // has port number
-			return tcp6, listen[:lastColonIndex], listen[lastColonIndex:]
+			ip = listen[:lastColonIndex]
+			port = listen[lastColonIndex:]
+		} else {
+			ip = listen
+			port = getDefaultPort(useTLS)
 		}
-		return tcp6, listen, getDefaultPort(useTLS)
+		if isWildcardIPv6(ip) {
+			ip = ""
+		}
+		return tcp6, ip, port
 	}
 
 	// ipv4
@@ -104,25 +112,23 @@ func splitListen(listen string, useTLS bool) (l43proto, ip, port string) {
 		colonIndex == lastColonIndex &&
 		(lastColonIndex == -1 || lastColonIndex > lastDotIndex+1)
 	if isIPv4 {
+		var ip, port string
 		if colonIndex >= 0 { // has port number
-			ip := listen[:colonIndex]
-			if isWildcardIPv4(ip) {
-				ip = ""
-			}
-			port := listen[colonIndex:]
-			return tcp4, ip, port
+			ip = listen[:colonIndex]
+			port = listen[colonIndex:]
+		} else {
+			ip = listen
+			port = getDefaultPort(useTLS)
 		}
-		return tcp4, listen, getDefaultPort(useTLS)
+		if isWildcardIPv4(ip) {
+			ip = ""
+		}
+		return tcp4, ip, port
 	}
 
 	// suppose to be a domain with port
 	if colonIndex >= 0 {
-		ip := listen[:colonIndex]
-		if isWildcardIPv6(ip) {
-			ip = ""
-		}
-		port := listen[colonIndex:]
-		return tcp46, ip, port
+		return tcp46, listen[:colonIndex], listen[colonIndex:]
 	}
 
 	// suppose to be a domain

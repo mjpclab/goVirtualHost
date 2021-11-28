@@ -38,8 +38,8 @@ func TestParamsValidateParam(t *testing.T) {
 
 	// IPv4 wildcard 0.0.0.0:port, conflict
 	p = &param{
-		proto: "tcp",
-		ip:    "0.0.0.0",
+		proto: "tcp4",
+		ip:    "",
 		port:  ":80",
 	}
 	errs = ps.validateParam(p)
@@ -51,42 +51,10 @@ func TestParamsValidateParam(t *testing.T) {
 
 	// IPv6 wildcard [::]:port, conflict
 	p = &param{
-		proto: "tcp",
+		proto: "tcp6",
+		ip:    "",
 		port:  ":80",
 	}
-	p.ip = "[::]"
-	errs = ps.validateParam(p)
-	if len(errs) == 0 {
-		t.Error()
-	} else if !errors.Is(errs[0], ConflictIPAddress) {
-		t.Error()
-	}
-
-	p.ip = "[::0]"
-	errs = ps.validateParam(p)
-	if len(errs) == 0 {
-		t.Error()
-	} else if !errors.Is(errs[0], ConflictIPAddress) {
-		t.Error()
-	}
-
-	p.ip = "[0::0]"
-	errs = ps.validateParam(p)
-	if len(errs) == 0 {
-		t.Error()
-	} else if !errors.Is(errs[0], ConflictIPAddress) {
-		t.Error()
-	}
-
-	p.ip = "[00::00]"
-	errs = ps.validateParam(p)
-	if len(errs) == 0 {
-		t.Error()
-	} else if !errors.Is(errs[0], ConflictIPAddress) {
-		t.Error()
-	}
-
-	p.ip = "[0000:0000:0000:0000:0000:0000:0000:0000]"
 	errs = ps.validateParam(p)
 	if len(errs) == 0 {
 		t.Error()

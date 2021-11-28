@@ -51,12 +51,18 @@ func TestSplitListen(t *testing.T) {
 	if !match("1.2.3.4", true, "tcp4", "1.2.3.4", ":443") {
 		t.Error()
 	}
+	if !match("0.0.0.0", false, "tcp4", "", ":80") {
+		t.Error()
+	}
 
 	// ipv4:port
 	if !match("2.3.4.5:6", false, "tcp4", "2.3.4.5", ":6") {
 		t.Error()
 	}
 	if !match("2.3.4.5:6", true, "tcp4", "2.3.4.5", ":6") {
+		t.Error()
+	}
+	if !match("0.0.0.0:6", false, "tcp4", "", ":6") {
 		t.Error()
 	}
 
@@ -67,12 +73,18 @@ func TestSplitListen(t *testing.T) {
 	if !match("[::1]", true, "tcp6", "[::1]", ":443") {
 		t.Error()
 	}
+	if !match("[::]", false, "tcp6", "", ":80") {
+		t.Error()
+	}
 
 	// ipv6:port
 	if !match("[fe80::1234]:7", false, "tcp6", "[fe80::1234]", ":7") {
 		t.Error()
 	}
 	if !match("[fe80::1234]:7", true, "tcp6", "[fe80::1234]", ":7") {
+		t.Error()
+	}
+	if !match("[::]:7", false, "tcp6", "", ":7") {
 		t.Error()
 	}
 

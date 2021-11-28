@@ -38,8 +38,10 @@ Intent to work on TLS mode, but certificate is not provided.
 
 - `ConflictIPAddress`
 
-One Virtual host tries to listen on a specific IP address and port,
-while another virtual host tries to listen on a wildcard IP(e.g. "0.0.0.0") of same port.
+One Virtual host tries to listen on a specific IP:port,
+while another virtual host tries to listen on a wildcard IP of port(e.g. ":port").
+Or one virtual host tries to listen on a specific version of wildcard IP of port(e.g. "0.0.0.0:port" or "[::]:port"),
+while another virtual host tries to listen on a wildcard IP of port(e.g. ":port").
 
 - `ConflictTLSMode`
 
