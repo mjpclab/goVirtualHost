@@ -105,16 +105,51 @@ func splitListen(listen string, useTLS bool) (l43proto, ip, port string) {
 		(lastColonIndex == -1 || lastColonIndex > lastDotIndex+1)
 	if isIPv4 {
 		if colonIndex >= 0 { // has port number
-			return tcp4, listen[:colonIndex], listen[colonIndex:]
+			ip := listen[:colonIndex]
+			if isWildcardIPv4(ip) {
+				ip = ""
+			}
+			port := listen[colonIndex:]
+			return tcp4, ip, port
 		}
 		return tcp4, listen, getDefaultPort(useTLS)
 	}
 
 	// suppose to be a domain with port
 	if colonIndex >= 0 {
-		return tcp46, listen[:colonIndex], listen[colonIndex:]
+		ip := listen[:colonIndex]
+		if isWildcardIPv6(ip) {
+			ip = ""
+		}
+		port := listen[colonIndex:]
+		return tcp46, ip, port
 	}
 
 	// suppose to be a domain
 	return tcp46, listen, getDefaultPort(useTLS)
+}
+
+func isWildcardIPv4(ip string) bool {
+	return ip == "0.0.0.0"
+}
+
+func isWildcardIPv6(ip string) bool {
+	// min len==4, [::]
+	// max len==41, [0000:0000:0000:0000:0000:0000:0000:0000]
+	if len(ip) < 4 || len(ip) > 41 {
+		return false
+	}
+
+	// remove brackets
+	ip = ip[1 : len(ip)-1]
+
+	for _, c := range ip {
+		switch c {
+		case '0', ':':
+			continue
+		}
+		return false
+	}
+
+	return true
 }

@@ -116,3 +116,75 @@ func TestSplitListen(t *testing.T) {
 		t.Error()
 	}
 }
+
+func TestIsIPv4Wildcard(t *testing.T) {
+	if !isWildcardIPv4("0.0.0.0") {
+		t.Error()
+	}
+}
+
+func TestIsIPv6Wildcard(t *testing.T) {
+	if isWildcardIPv6("0.0.0.0") {
+		t.Error()
+	}
+
+	if isWildcardIPv6("[fe80::1]") {
+		t.Error()
+	}
+
+	if isWildcardIPv6("[::1]") {
+		t.Error()
+	}
+
+	if isWildcardIPv6("[fe80::1]:8080") {
+		t.Error()
+	}
+
+	if isWildcardIPv6("[::1]:8080") {
+		t.Error()
+	}
+
+	if isWildcardIPv6("8080") {
+		t.Error()
+	}
+
+	if isWildcardIPv6(":8080") {
+		t.Error()
+	}
+
+	if isWildcardIPv6("[::]:8080") {
+		t.Error()
+	}
+
+	if isWildcardIPv6("[::0]:8080") {
+		t.Error()
+	}
+
+	if !isWildcardIPv6("[::]") {
+		t.Error()
+	}
+
+	if !isWildcardIPv6("[::0]") {
+		t.Error()
+	}
+
+	if !isWildcardIPv6("[0::]") {
+		t.Error()
+	}
+
+	if !isWildcardIPv6("[0::0]") {
+		t.Error()
+	}
+
+	if !isWildcardIPv6("[::00]") {
+		t.Error()
+	}
+
+	if !isWildcardIPv6("[00::00]") {
+		t.Error()
+	}
+
+	if !isWildcardIPv6("[0000:0000:0000:0000:0000:0000:0000:0000]") {
+		t.Error()
+	}
+}
