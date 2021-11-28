@@ -19,7 +19,7 @@ type HostInfo struct {
 
 // normalized HostInfo Param
 type param struct {
-	proto     string
+	proto     string // "tcp", "tcp4", "tcp6"
 	ip        string
 	port      string
 	useTLS    bool
@@ -32,7 +32,7 @@ type params []*param
 
 // wrapper of net.Listener
 type listener struct {
-	proto       string
+	proto       string // "tcp", "tcp4", "tcp6"
 	ip          string
 	port        string
 	netListener net.Listener

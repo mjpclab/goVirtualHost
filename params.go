@@ -15,10 +15,18 @@ func (params params) validateParam(param *param) (errs []error) {
 			continue
 		}
 
-		if ownParam.port == param.port && (ownParam.ip != param.ip || ownParam.proto != param.proto) && ownParam.proto != unix && param.proto != unix {
-			if (ownParam.proto == tcp46 && ownParam.ip == "") ||
-				(param.proto == tcp46 && param.ip == "") ||
-				(ownParam.proto == param.proto && (ownParam.ip == "" || param.ip == "")) {
+		if ownParam.port == param.port && ownParam.proto != unix && param.proto != unix {
+			ipConflict := false
+			if ownParam.proto == param.proto {
+				if ownParam.ip != param.ip && (ownParam.ip == "" || param.ip == "") {
+					ipConflict = true
+				}
+			} else {
+				if ownParam.proto == tcp46 || param.proto == tcp46 {
+					ipConflict = true
+				}
+			}
+			if ipConflict {
 				err := wrapError(ConflictIPAddress, fmt.Sprintf("conflict IP address: %+v, %+v", ownParam, param))
 				errs = append(errs, err)
 			}
