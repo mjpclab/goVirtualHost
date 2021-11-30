@@ -10,12 +10,11 @@ func (info *HostInfo) toParam(listen string, useTLS bool) *param {
 	}
 
 	param := &param{
-		proto:   proto,
-		ip:      ip,
-		port:    port,
-		useTLS:  useTLS,
-		cert:    cert,
-		handler: info.Handler,
+		proto:  proto,
+		ip:     ip,
+		port:   port,
+		useTLS: useTLS,
+		cert:   cert,
 	}
 
 	return param

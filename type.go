@@ -25,7 +25,6 @@ type param struct {
 	useTLS    bool
 	cert      *tls.Certificate
 	hostNames []string
-	handler   http.Handler
 }
 
 type params []*param
