@@ -21,10 +21,8 @@ func (info *HostInfo) toParam(listen string, useTLS bool) *param {
 	return param
 }
 
-func (info *HostInfo) toParams() params {
-	params := params{}
-
-	hostNames := normalizeHostNames(info.HostNames)
+func (info *HostInfo) parse() (hostNames []string, params params) {
+	hostNames = normalizeHostNames(info.HostNames)
 
 	for _, listen := range info.Listens {
 		param := info.toParam(listen, info.Cert != nil)
@@ -44,5 +42,5 @@ func (info *HostInfo) toParams() params {
 		params = append(params, param)
 	}
 
-	return params
+	return
 }
