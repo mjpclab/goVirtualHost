@@ -29,17 +29,22 @@ func (server *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	server.defaultVhost.handler.ServeHTTP(w, r)
 }
 
-func (server *server) updateDefaultVhost() {
+func (server *server) getDefaultVhost() *vhost {
 	for _, vh := range server.vhosts {
 		if len(vh.hostNames) == 0 {
-			server.defaultVhost = vh
-			break
+			return vh
 		}
 	}
 
-	if server.defaultVhost == nil {
-		server.defaultVhost = server.vhosts[0]
+	if len(server.vhosts) > 0 {
+		return server.vhosts[0]
 	}
+
+	return nil
+}
+
+func (server *server) updateDefaultVhost() {
+	server.defaultVhost = server.getDefaultVhost()
 }
 
 func (server *server) updateHttpServerTLSConfig() {

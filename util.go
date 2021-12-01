@@ -1,6 +1,7 @@
 package goVirtualHost
 
 import (
+	"net"
 	"strings"
 )
 
@@ -46,6 +47,14 @@ func getDefaultPort(useTLS bool) string {
 		return ":443"
 	} else {
 		return ":80"
+	}
+}
+
+func isDefaultPort(port string, useTLS bool) bool {
+	if useTLS {
+		return port == ":443"
+	} else {
+		return port == ":80"
 	}
 }
 
@@ -158,4 +167,30 @@ func isWildcardIPv6(ip string) bool {
 	}
 
 	return true
+}
+
+func getAllIfaceIPs() (all, allv4, allv6 []string) {
+	addrs, _ := net.InterfaceAddrs()
+	for _, addr := range addrs {
+		var ip net.IP
+		switch v := addr.(type) {
+		case *net.IPNet:
+			ip = v.IP
+		case *net.IPAddr:
+			ip = v.IP
+		default:
+			continue
+		}
+
+		ipStr := ip.String()
+		if ip.To4() != nil {
+			all = append(all, ipStr)
+			allv4 = append(allv4, ipStr)
+		} else if ip.To16() != nil {
+			ipStr = "[" + ipStr + "]"
+			all = append(all, ipStr)
+			allv6 = append(allv6, ipStr)
+		}
+	}
+	return
 }

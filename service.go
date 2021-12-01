@@ -147,3 +147,74 @@ func (svc *Service) Close() {
 		listener.close()
 	}
 }
+
+func (svc *Service) GetAccessibleURLs() [][]string {
+	gotIPList := false
+	var ipv46s, ipv4s, ipv6s []string
+
+	vhUrls := make(map[*vhost][]string)
+
+	for _, listener := range svc.listeners {
+		server := listener.server
+		defaultVh := server.getDefaultVhost()
+
+		port := ""
+		if !isDefaultPort(listener.port, server.useTLS) {
+			port = listener.port
+		}
+
+		for _, vh := range server.vhosts {
+			if listener.proto == unix {
+				url := "unix:" + listener.port
+				vhUrls[vh] = append(vhUrls[vh], url)
+				continue
+			}
+			for _, hostname := range vh.hostNames {
+				var url string
+				if server.useTLS {
+					url = httpsUrl
+				} else {
+					url = httpUrl
+				}
+				url = url + hostname + port
+				vhUrls[vh] = append(vhUrls[vh], url)
+			}
+			if vh == defaultVh {
+				var url string
+				if server.useTLS {
+					url = httpsUrl
+				} else {
+					url = httpUrl
+				}
+				if len(listener.ip) > 0 {
+					url = url + listener.ip + port
+					vhUrls[vh] = append(vhUrls[vh], url)
+				} else {
+					if !gotIPList {
+						gotIPList = true
+						ipv46s, ipv4s, ipv6s = getAllIfaceIPs()
+					}
+					var ips []string
+					switch listener.proto {
+					case tcp46:
+						ips = ipv46s
+					case tcp4:
+						ips = ipv4s
+					case tcp6:
+						ips = ipv6s
+					}
+					for _, ip := range ips {
+						ipUrl := url + ip + port
+						vhUrls[vh] = append(vhUrls[vh], ipUrl)
+					}
+				}
+			}
+		}
+	}
+
+	vhostsUrls := make([][]string, len(svc.vhosts))
+	for i, vhost := range svc.vhosts {
+		vhostsUrls[i] = vhUrls[vhost]
+	}
+	return vhostsUrls
+}
