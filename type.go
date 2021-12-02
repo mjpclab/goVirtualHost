@@ -77,3 +77,13 @@ type Service struct {
 	servers   servers
 	vhosts    vhosts
 }
+
+// ip
+
+type ipAddr struct {
+	netIP              net.IP
+	version            int
+	isGlobalUnicast    bool
+	isLinkLocalUnicast bool
+}
+type ipAddrs []*ipAddr

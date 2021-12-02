@@ -2,6 +2,7 @@ package goVirtualHost
 
 import (
 	"net"
+	"sort"
 	"strings"
 )
 
@@ -170,27 +171,36 @@ func isWildcardIPv6(ip string) bool {
 }
 
 func getAllIfaceIPs() (all, allv4, allv6 []string) {
-	addrs, _ := net.InterfaceAddrs()
-	for _, addr := range addrs {
-		var ip net.IP
-		switch v := addr.(type) {
+	var allAddrs, allAddrsV4, allAddrsV6 ipAddrs
+
+	netAddrs, _ := net.InterfaceAddrs()
+	for _, netAddr := range netAddrs {
+		var netIP net.IP
+		switch v := netAddr.(type) {
 		case *net.IPNet:
-			ip = v.IP
+			netIP = v.IP
 		case *net.IPAddr:
-			ip = v.IP
+			netIP = v.IP
 		default:
 			continue
 		}
 
-		ipStr := ip.String()
-		if ip.To4() != nil {
-			all = append(all, ipStr)
-			allv4 = append(allv4, ipStr)
-		} else if ip.To16() != nil {
-			ipStr = "[" + ipStr + "]"
-			all = append(all, ipStr)
-			allv6 = append(allv6, ipStr)
+		addr, _ := newIPAddr(netIP)
+		allAddrs = append(allAddrs, addr)
+		if addr.version == ip4ver {
+			allAddrsV4 = append(allAddrsV4, addr)
+		} else if addr.version == ip6ver {
+			allAddrsV6 = append(allAddrsV6, addr)
 		}
 	}
+
+	sort.Sort(allAddrs)
+	all = allAddrs.String()
+
+	sort.Sort(allAddrsV4)
+	allv4 = allAddrsV4.String()
+
+	sort.Sort(allAddrsV6)
+	allv6 = allAddrsV6.String()
 	return
 }
