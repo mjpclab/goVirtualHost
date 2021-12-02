@@ -48,6 +48,9 @@ func TestSplitListen(t *testing.T) {
 	if !match("1.2.3.4", false, "tcp4", "1.2.3.4", ":80") {
 		t.Error()
 	}
+	if !match(" 1.2.3.4\t", false, "tcp4", "1.2.3.4", ":80") {
+		t.Error()
+	}
 	if !match("1.2.3.4", true, "tcp4", "1.2.3.4", ":443") {
 		t.Error()
 	}

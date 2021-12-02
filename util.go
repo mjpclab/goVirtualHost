@@ -6,6 +6,12 @@ import (
 	"strings"
 )
 
+var whitespaceRemover = strings.NewReplacer(
+	" ", "",
+	"\t", "",
+	"\v", "",
+)
+
 func extractHostName(host string) string {
 	hostLen := len(host)
 	if hostLen == 0 {
@@ -71,6 +77,8 @@ func isDigits(input string) bool {
 }
 
 func splitListen(listen string, useTLS bool) (l43proto, ip, port string) {
+	listen = whitespaceRemover.Replace(listen)
+
 	// empty, use default tcp port
 	if len(listen) == 0 {
 		return tcp46, "", getDefaultPort(useTLS)
