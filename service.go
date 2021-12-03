@@ -81,7 +81,7 @@ func (svc *Service) openServers() (errs []error) {
 	chServeErr := make(chan error)
 
 	go func() {
-		wg := sync.WaitGroup{}
+		wg := &sync.WaitGroup{}
 		for _, listener := range svc.listeners {
 			wg.Add(1)
 			l := listener
