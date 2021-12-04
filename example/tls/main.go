@@ -44,7 +44,7 @@ func main() {
 	}
 
 	// print accessible urls
-	vhostsUrls := svc.GetAccessibleURLs()
+	vhostsUrls := svc.GetAccessibleURLs(false)
 	fmt.Println("Accessible urls:")
 	for vhIndex, urls := range vhostsUrls {
 		fmt.Println("virtual host", vhIndex)

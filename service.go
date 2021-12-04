@@ -148,7 +148,7 @@ func (svc *Service) Close() {
 	}
 }
 
-func (svc *Service) GetAccessibleURLs() [][]string {
+func (svc *Service) GetAccessibleURLs(includeLoopback bool) [][]string {
 	gotIPList := false
 	var ipv46s, ipv4s, ipv6s []string
 
@@ -192,7 +192,7 @@ func (svc *Service) GetAccessibleURLs() [][]string {
 				} else {
 					if !gotIPList {
 						gotIPList = true
-						ipv46s, ipv4s, ipv6s = getAllIfaceIPs()
+						ipv46s, ipv4s, ipv6s = getAllIfaceIPs(includeLoopback)
 					}
 					var ips []string
 					switch listener.proto {

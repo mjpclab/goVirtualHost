@@ -16,6 +16,14 @@ func (addrs ipAddrs) Less(i, j int) bool {
 		return addr1.isLinkLocalUnicast
 	}
 
+	if addr1.isNonPrivate != addr2.isNonPrivate {
+		return addr1.isNonPrivate
+	}
+
+	if addr1.isNonLoopback != addr2.isNonLoopback {
+		return addr1.isNonLoopback
+	}
+
 	if addr1.version != addr2.version {
 		return addr1.version == ip4ver
 	}

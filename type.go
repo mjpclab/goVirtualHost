@@ -85,5 +85,7 @@ type ipAddr struct {
 	version            int
 	isGlobalUnicast    bool
 	isLinkLocalUnicast bool
+	isNonPrivate       bool
+	isNonLoopback      bool
 }
 type ipAddrs []*ipAddr

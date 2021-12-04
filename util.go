@@ -178,7 +178,7 @@ func isWildcardIPv6(ip string) bool {
 	return true
 }
 
-func getAllIfaceIPs() (all, allv4, allv6 []string) {
+func getAllIfaceIPs(includeLoopback bool) (all, allv4, allv6 []string) {
 	var allAddrs, allAddrsV4, allAddrsV6 ipAddrs
 
 	netAddrs, _ := net.InterfaceAddrs()
@@ -194,11 +194,13 @@ func getAllIfaceIPs() (all, allv4, allv6 []string) {
 		}
 
 		addr, _ := newIPAddr(netIP)
-		allAddrs = append(allAddrs, addr)
-		if addr.version == ip4ver {
-			allAddrsV4 = append(allAddrsV4, addr)
-		} else if addr.version == ip6ver {
-			allAddrsV6 = append(allAddrsV6, addr)
+		if addr.isNonLoopback || includeLoopback {
+			allAddrs = append(allAddrs, addr)
+			if addr.version == ip4ver {
+				allAddrsV4 = append(allAddrsV4, addr)
+			} else if addr.version == ip6ver {
+				allAddrsV6 = append(allAddrsV6, addr)
+			}
 		}
 	}
 
