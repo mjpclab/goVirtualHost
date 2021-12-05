@@ -92,6 +92,10 @@ otherwise use the first virtual host.
 `http.Handler` to handle requests.
 Could be an instance of `http.ServeMux`, `httputil.ReverseProxy`, or any other type that implements `http.Handler`.
 
+# (*Service) GetAccessibleURLs(includeLoopback bool) [][]string
+Get possible access URLs. For the returned type `[][]string`, the first dimension is virtual host index,
+the second dimension is the index of URL in that virtual host.
+
 # (*Service) Open() []error
 Start listening on network ports, and serve for http requests. The method will not return until all servers are closed.
 e.g. call `Close` method on another goroutine.
