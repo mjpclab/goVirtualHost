@@ -114,6 +114,8 @@ func (svc *Service) Open() (errs []error) {
 	svc.state = stateOpened
 	svc.mu.Unlock()
 
+	svc.params = nil // release unused data
+
 	for _, s := range svc.servers {
 		s.updateDefaultVhost()
 		s.updateHttpServerTLSConfig()
