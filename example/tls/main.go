@@ -1,9 +1,9 @@
 package main
 
 import (
-	goVirtualHost "../.."
 	"crypto/tls"
 	"fmt"
+	"mjpclab.dev/goVirtualHost"
 	"net/http"
 )
 
