@@ -110,6 +110,10 @@ e.g. call `Close` method on another goroutine.
 # (*Service) Close()
 Stop serving. To restart serving, a new `Service` must be created.
 
+# (*Service) Shutdown()
+Similar to `*Service.Close()`, but close server gracefully.
+It invokes `http.Server`'s `Shutdown()` method internally.
+
 # Architecture & Internals
 ```
 Service
