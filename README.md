@@ -28,28 +28,28 @@ svc.Open()
 # NewService() *Service
 `NewService` returns a service instance that manages multiple virtual hosts.
 
-# (*Service) Add(*HostInfo) []error
+# (*Service) Add(*HostInfo) (errs, warns []error)
 Adding a new virtual host information to the `Service`.
 You can use `errors.Is()` to test possible errors:
 
-- `CertificateNotFound`
+- error `CertificateNotFound`
 
 Intent to work on TLS mode, but certificate is not provided.
 
-- `ConflictIPAddress`
+- error `ConflictIPAddress`
 
 One Virtual host tries to listen on a specific IP:port,
 while another virtual host tries to listen on a wildcard IP of port(e.g. ":port").
 Or one virtual host tries to listen on a specific version of wildcard IP of port(e.g. "0.0.0.0:port" or "[::]:port"),
 while another virtual host tries to listen on a wildcard IP of port(e.g. ":port").
 
-- `ConflictTLSMode`
+- error `ConflictTLSMode`
 
 For a specific listening endpoint(IP:port or socket),
 one virtual host works on plain mode,
 while another virtual host works on TLS mode.
 
-- `DuplicatedAddressHostname`
+- warning `DuplicatedAddressHostname`
 
 Two virtual hosts listen on same endpoint, they use the same hostname.
 
