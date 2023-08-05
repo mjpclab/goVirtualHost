@@ -1,6 +1,7 @@
 package goVirtualHost
 
 import (
+	"context"
 	"errors"
 	"sync"
 )
@@ -41,7 +42,7 @@ func (svc *Service) addVhostToServers(vhost *vhost, params params) {
 	}
 }
 
-func (svc *Service) Add(info *HostInfo) (errs []error) {
+func (svc *Service) Add(info *HostInfo) (errs, warns []error) {
 	svc.mu.Lock()
 	defer svc.mu.Unlock()
 
@@ -50,15 +51,15 @@ func (svc *Service) Add(info *HostInfo) (errs []error) {
 		return
 	}
 
-	hostNames, vhostParams := info.parse()
+	hostNames, vhostParams, certs := info.parse()
 
-	errs = svc.params.validate(vhostParams)
+	errs, warns = svc.params.validate(vhostParams)
 	if len(errs) > 0 {
 		return
 	}
 	svc.params = append(svc.params, vhostParams...)
 
-	vhost := newVhost(info.Cert, hostNames, info.Handler)
+	vhost := newVhost(certs, hostNames, info.Handler)
 	svc.vhosts = append(svc.vhosts, vhost)
 
 	svc.addVhostToServers(vhost, vhostParams)
@@ -114,6 +115,8 @@ func (svc *Service) Open() (errs []error) {
 	svc.state = stateOpened
 	svc.mu.Unlock()
 
+	svc.params = nil // release unused data
+
 	for _, s := range svc.servers {
 		s.updateDefaultVhost()
 		s.updateHttpServerTLSConfig()
@@ -129,6 +132,31 @@ func (svc *Service) Open() (errs []error) {
 
 	errs = svc.openServers()
 	return
+}
+
+func (svc *Service) Shutdown(ctx context.Context) {
+	svc.mu.Lock()
+	if svc.state >= stateClosed {
+		svc.mu.Unlock()
+		return
+	}
+	svc.state = stateClosed
+	svc.mu.Unlock()
+
+	wg := &sync.WaitGroup{}
+	for _, listener := range svc.listeners {
+		l := listener
+
+		wg.Add(1)
+		go func() {
+			if l.server != nil {
+				l.server.shutdown(ctx)
+			}
+			l.close()
+			wg.Done()
+		}()
+	}
+	wg.Wait()
 }
 
 func (svc *Service) Close() {
@@ -151,7 +179,7 @@ func (svc *Service) Close() {
 func (svc *Service) GetAccessibleURLs(includeLoopback bool) [][]string {
 	gotIPList := false
 	var ipv46s, ipv4s, ipv6s []string
-
+	var allHostNameUrls []string
 	vhUrls := make(map[*vhost][]string)
 
 	for _, listener := range svc.listeners {
@@ -177,7 +205,10 @@ func (svc *Service) GetAccessibleURLs(includeLoopback bool) [][]string {
 					url = httpUrl
 				}
 				url = url + hostname + port
-				vhUrls[vh] = append(vhUrls[vh], url)
+				if !contains(allHostNameUrls, url) {
+					allHostNameUrls = append(allHostNameUrls, url)
+					vhUrls[vh] = append(vhUrls[vh], url)
+				}
 			}
 			if vh == defaultVh {
 				var url string

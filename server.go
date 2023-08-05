@@ -1,6 +1,7 @@
 package goVirtualHost
 
 import (
+	"context"
 	"crypto/tls"
 	"net/http"
 )
@@ -54,7 +55,7 @@ func (server *server) updateHttpServerTLSConfig() {
 		certs := []tls.Certificate{}
 
 		for _, vhost := range server.vhosts {
-			certs = append(certs, *vhost.cert)
+			certs = append(certs, vhost.certs...)
 		}
 
 		tlsConfig = &tls.Config{
@@ -81,6 +82,10 @@ func (server *server) open(listener *listener) error {
 	} else {
 		return server.httpServer.Serve(listener.netListener)
 	}
+}
+
+func (server *server) shutdown(ctx context.Context) error {
+	return server.httpServer.Shutdown(ctx)
 }
 
 func (server *server) close() error {

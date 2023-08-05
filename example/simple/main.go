@@ -1,8 +1,8 @@
 package main
 
 import (
-	goVirtualHost "../.."
 	"fmt"
+	"mjpclab.dev/goVirtualHost"
 	"net/http"
 )
 

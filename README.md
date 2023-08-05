@@ -28,28 +28,28 @@ svc.Open()
 # NewService() *Service
 `NewService` returns a service instance that manages multiple virtual hosts.
 
-# (*Service) Add(*HostInfo) []error
+# (*Service) Add(*HostInfo) (errs, warns []error)
 Adding a new virtual host information to the `Service`.
 You can use `errors.Is()` to test possible errors:
 
-- `CertificateNotFound`
+- error `CertificateNotFound`
 
 Intent to work on TLS mode, but certificate is not provided.
 
-- `ConflictIPAddress`
+- error `ConflictIPAddress`
 
 One Virtual host tries to listen on a specific IP:port,
 while another virtual host tries to listen on a wildcard IP of port(e.g. ":port").
 Or one virtual host tries to listen on a specific version of wildcard IP of port(e.g. "0.0.0.0:port" or "[::]:port"),
 while another virtual host tries to listen on a wildcard IP of port(e.g. ":port").
 
-- `ConflictTLSMode`
+- error `ConflictTLSMode`
 
 For a specific listening endpoint(IP:port or socket),
 one virtual host works on plain mode,
 while another virtual host works on TLS mode.
 
-- `DuplicatedAddressHostname`
+- warning `DuplicatedAddressHostname`
 
 Two virtual hosts listen on same endpoint, they use the same hostname.
 
@@ -58,7 +58,7 @@ the `HostInfo` is the initial virtual host information, with the properties:
 
 ## Listens []string
 IP and/or port the server listens on, e.g. ":80" or "127.0.0.1:80".
-if `Cert` is present, Serve for TLS HTTP, otherwise Serve for plain HTTP.
+if `Certs` available, Serve for TLS HTTP, otherwise Serve for plain HTTP.
 If port is not specified, use "80" as default for Plain HTTP mode, "443" for TLS mode.
 If value contains "/" then treat it as a unix socket file.
 
@@ -74,10 +74,17 @@ Serve for TLS HTTP.
 If port is not specified, use "443" as default.
 If value contains "/" then treat it as a unix socket file.
 
-## Cert *tls.Certificate
-TLS Certificate supplied for TLS mode. A helper function can be used to load from external PEM files:
+## Certs []tls.Certificate
+TLS Certificates supplied for TLS mode. Several helper functions can be used to load from external PEM files:
 ```go
-func LoadCertificate(certFile, keyFile string) (*tls.Certificate, error)
+// load certificate from cert file and key file
+func LoadCertificate(certFile, keyFile string) (cert tls.Certificate, err error)
+
+// load certificates from cert file list and key file list
+func LoadCertificates(certFiles, keyFiles []string) (certs []tls.Certificate, errs []error)
+
+// load certificates from a list, each element is an array that contains certificate file and key file
+func LoadCertificatesFromEntries(certKeyEntries [][2]string) (certs []tls.Certificate, errs []error) {
 ```
 
 ## HostNames []string
@@ -102,6 +109,10 @@ e.g. call `Close` method on another goroutine.
 
 # (*Service) Close()
 Stop serving. To restart serving, a new `Service` must be created.
+
+# (*Service) Shutdown()
+Similar to `*Service.Close()`, but close server gracefully.
+It invokes `http.Server`'s `Shutdown()` method internally.
 
 # Architecture & Internals
 ```
