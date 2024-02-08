@@ -13,7 +13,7 @@ func main() {
 	svc := goVirtualHost.NewService()
 
 	// virtual host: localhost
-	errors = svc.Add(&goVirtualHost.HostInfo{
+	errors, _ = svc.Add(&goVirtualHost.HostInfo{
 		Listens:   []string{":8080"},
 		HostNames: []string{"localhost"},
 		Handler:   http.FileServer(http.Dir(".")),
@@ -23,7 +23,7 @@ func main() {
 	}
 
 	// virtual host: default
-	errors = svc.Add(&goVirtualHost.HostInfo{
+	errors, _ = svc.Add(&goVirtualHost.HostInfo{
 		Listens: []string{":8080"},
 		Handler: http.FileServer(http.Dir("/tmp")),
 	})
