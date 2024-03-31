@@ -32,15 +32,15 @@ type param struct {
 type params []*param
 
 // wrapper of net.Listener
-type listener struct {
-	proto       string // "tcp", "tcp4", "tcp6"
-	ip          string
-	port        string
-	netListener net.Listener
-	server      *server
+type listenable struct {
+	proto    string // "tcp", "tcp4", "tcp6"
+	ip       string
+	port     string
+	listener net.Listener
+	server   *server
 }
 
-type listeners []*listener
+type listenables []*listenable
 
 // wrapper for http.Server
 type server struct {
@@ -72,12 +72,12 @@ const (
 )
 
 type Service struct {
-	mu        sync.Mutex
-	state     state
-	params    params
-	listeners listeners
-	servers   servers
-	vhosts    vhosts
+	mu          sync.Mutex
+	state       state
+	params      params
+	listenables listenables
+	servers     servers
+	vhosts      vhosts
 }
 
 // ip

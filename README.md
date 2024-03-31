@@ -126,12 +126,12 @@ Service
     +---------+--+------+-----+---+---------+
     |   server   |   server   |   server    |
     +------------+------------+-------------+
-    |  listener  |  listener  |  listener   |
+    | listenable | listenable | listenable  |
     +------------+------------+-------------+
 ```
 
-## listener
-`listener` is a wrapper for `net.Listener`, which open ports or sockes and listen.
+## listenable
+`listenable` is a wrapper for `net.Listener`, which open ports or sockets and listen.
 
 ## server
 `server` is a wrapper for `http.Server`. It's `handler` does not serve for end user,

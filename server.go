@@ -73,11 +73,11 @@ func (server *server) updateHttpServerHandler() {
 	server.httpServer.Handler = server
 }
 
-func (server *server) open(listener *listener) error {
+func (server *server) open(l *listenable) error {
 	if server.useTLS {
-		return server.httpServer.ServeTLS(listener.netListener, "", "")
+		return server.httpServer.ServeTLS(l.listener, "", "")
 	} else {
-		return server.httpServer.Serve(listener.netListener)
+		return server.httpServer.Serve(l.listener)
 	}
 }
 
