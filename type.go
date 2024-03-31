@@ -33,24 +33,24 @@ type params []*param
 
 // wrapper of net.Listener
 type listenable struct {
-	proto    string // "tcp", "tcp4", "tcp6"
-	ip       string
-	port     string
-	listener net.Listener
-	server   *server
+	proto     string // "tcp", "tcp4", "tcp6"
+	ip        string
+	port      string
+	listener  net.Listener
+	serveable *serveable
 }
 
 type listenables []*listenable
 
 // wrapper for http.Server
-type server struct {
+type serveable struct {
 	useTLS       bool
 	vhosts       vhosts
 	defaultVhost *vhost
-	httpServer   *http.Server
+	server       *http.Server
 }
 
-type servers []*server
+type serveables []*serveable
 
 // virtual host
 type vhost struct {
@@ -76,7 +76,7 @@ type Service struct {
 	state       state
 	params      params
 	listenables listenables
-	servers     servers
+	serveables  serveables
 	vhosts      vhosts
 }
 

@@ -124,7 +124,7 @@ Service
     +---------+---------+---------+---------+
     |  vhost  |  vhost  |  vhost  |  vhost  |
     +---------+--+------+-----+---+---------+
-    |   server   |   server   |   server    |
+    | serveable  | serveable  |  serveable  |
     +------------+------------+-------------+
     | listenable | listenable | listenable  |
     +------------+------------+-------------+
@@ -133,8 +133,8 @@ Service
 ## listenable
 `listenable` is a wrapper for `net.Listener`, which open ports or sockets and listen.
 
-## server
-`server` is a wrapper for `http.Server`. It's `handler` does not serve for end user,
+## serveable
+`serveable` is a wrapper for `http.Server`. It's `handler` does not serve for end user,
 but dispatching requests to related virtual host according to the Host header.
 
 ## vhost
