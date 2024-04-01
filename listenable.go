@@ -26,7 +26,7 @@ func (l *listenable) open() error {
 	l.listener = listener
 
 	if l.proto == "unix" && err == nil {
-		os.Chmod(addr, 0777)
+		os.Chmod(addr, 0660)
 	}
 
 	return err
