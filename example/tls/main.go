@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	errors = svc.Add(&goVirtualHost.HostInfo{
+	errors, _ = svc.Add(&goVirtualHost.HostInfo{
 		Listens:   []string{":8080"},
 		Certs:     []tls.Certificate{certLocalhost},
 		HostNames: []string{"localhost"},
@@ -34,7 +34,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	errors = svc.Add(&goVirtualHost.HostInfo{
+	errors, _ = svc.Add(&goVirtualHost.HostInfo{
 		Listens:   []string{":8080"},
 		Certs:     []tls.Certificate{certExample},
 		HostNames: nil,
