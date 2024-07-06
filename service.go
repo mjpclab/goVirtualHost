@@ -19,7 +19,7 @@ func NewService() *Service {
 	return service
 }
 
-func (svc *Service) addVhostToServers(vhost *vhost, params params) {
+func (svc *Service) addVhostToServeable(vhost *vhost, params params) {
 	for _, param := range params {
 		var l *listenable
 		var s *serveable
@@ -61,7 +61,7 @@ func (svc *Service) Add(info *HostInfo) (errs, warns []error) {
 	vhost := newVhost(certs, hostNames, info.Handler)
 	svc.vhosts = append(svc.vhosts, vhost)
 
-	svc.addVhostToServers(vhost, vhostParams)
+	svc.addVhostToServeable(vhost, vhostParams)
 
 	return
 }
