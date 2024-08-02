@@ -12,21 +12,24 @@ type HostInfo struct {
 	Listens      []string
 	ListensPlain []string
 	ListensTLS   []string
+	CertKeyPaths [][2]string // []{ {certFile, keyFile}, ... }
 	Certs        []tls.Certificate
 	HostNames    []string
 	Handler      http.Handler
 }
 
+type certKeyPairs [][2]string
 type certs []tls.Certificate
 
 // normalized HostInfo Param
 type param struct {
-	proto     string // "tcp", "tcp4", "tcp6"
-	ip        string
-	port      string
-	useTLS    bool
-	certs     certs
-	hostNames []string
+	proto        string // "tcp", "tcp4", "tcp6"
+	ip           string
+	port         string
+	useTLS       bool
+	certKeyPaths certKeyPairs
+	certs        certs
+	hostNames    []string
 }
 
 type params []*param
@@ -54,9 +57,10 @@ type serveables []*serveable
 
 // virtual host
 type vhost struct {
-	certs     certs
-	hostNames []string
-	handler   http.Handler
+	hostNames    []string
+	certKeyPaths certKeyPairs
+	certs        certs
+	handler      http.Handler
 }
 
 type vhosts []*vhost

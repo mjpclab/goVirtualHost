@@ -58,7 +58,7 @@ the `HostInfo` is the initial virtual host information, with the properties:
 
 ## Listens []string
 IP and/or port the server listens on, e.g. ":80" or "127.0.0.1:80".
-if `Certs` available, Serve for TLS HTTP, otherwise Serve for plain HTTP.
+if `CertKeyPaths` or `Certs` available, Serve for TLS HTTP, otherwise Serve for plain HTTP.
 If port is not specified, use "80" as default for Plain HTTP mode, "443" for TLS mode.
 If value contains "/" then treat it as a unix socket file.
 
@@ -74,8 +74,11 @@ Serve for TLS HTTP.
 If port is not specified, use "443" as default.
 If value contains "/" then treat it as a unix socket file.
 
+## CertKeyPaths [][2]string
+List of TLS certificate file path with each element `[2]string{certPath, keyPath}`.
+
 ## Certs []tls.Certificate
-TLS Certificates supplied for TLS mode. Several helper functions can be used to load from external PEM files:
+TLS certificates supplied for TLS mode. Several helper functions can be used to load from external PEM files:
 ```go
 // load certificate from cert file and key file
 func LoadCertificate(certFile, keyFile string) (cert tls.Certificate, err error)

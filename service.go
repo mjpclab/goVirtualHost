@@ -50,7 +50,7 @@ func (svc *Service) Add(info *HostInfo) (errs, warns []error) {
 		return
 	}
 
-	hostNames, vhostParams, certs := info.parse()
+	vhostParams, hostNames, certKeyPaths, certs := info.parse()
 
 	errs, warns = svc.params.validate(vhostParams)
 	if len(errs) > 0 {
@@ -58,7 +58,7 @@ func (svc *Service) Add(info *HostInfo) (errs, warns []error) {
 	}
 	svc.params = append(svc.params, vhostParams...)
 
-	vhost := newVhost(certs, hostNames, info.Handler)
+	vhost := newVhost(hostNames, certKeyPaths, certs, info.Handler)
 	svc.vhosts = append(svc.vhosts, vhost)
 
 	svc.addVhostToServeable(vhost, vhostParams)

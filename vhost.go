@@ -5,11 +5,12 @@ import (
 	"strings"
 )
 
-func newVhost(certs certs, hostNames []string, handler http.Handler) *vhost {
+func newVhost(hostNames []string, certKeyPaths certKeyPairs, certs certs, handler http.Handler) *vhost {
 	vhost := &vhost{
-		certs:     certs,
-		hostNames: hostNames,
-		handler:   handler,
+		hostNames:    hostNames,
+		certKeyPaths: certKeyPaths,
+		certs:        certs,
+		handler:      handler,
 	}
 
 	return vhost
