@@ -32,7 +32,6 @@ func LoadCertificates(certFiles, keyFiles []string) (certs []tls.Certificate, er
 		errs = append(errs, CertKeyFileCountNotMatch)
 		return
 	}
-
 	if certLen == 0 {
 		return
 	}
@@ -50,15 +49,15 @@ func LoadCertificates(certFiles, keyFiles []string) (certs []tls.Certificate, er
 	return
 }
 
-func LoadCertificatesFromEntries(certKeyFileEntries [][2]string) (certs []tls.Certificate, errs []error) {
-	certLen := len(certKeyFileEntries)
+func LoadCertificatesFromPairs(certKeyFilePairs [][2]string) (certs []tls.Certificate, errs []error) {
+	certLen := len(certKeyFilePairs)
 	if certLen == 0 {
 		return
 	}
 
 	certs = make([]tls.Certificate, 0, certLen)
 	for i := 0; i < certLen; i++ {
-		cert, err := LoadCertificate(certKeyFileEntries[i][0], certKeyFileEntries[i][1])
+		cert, err := LoadCertificate(certKeyFilePairs[i][0], certKeyFilePairs[i][1])
 		if err != nil {
 			errs = append(errs, err)
 		} else {

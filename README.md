@@ -84,7 +84,7 @@ func LoadCertificate(certFile, keyFile string) (cert tls.Certificate, err error)
 func LoadCertificates(certFiles, keyFiles []string) (certs []tls.Certificate, errs []error)
 
 // load certificates from a list, each element is an array that contains certificate file and key file
-func LoadCertificatesFromEntries(certKeyEntries [][2]string) (certs []tls.Certificate, errs []error) {
+func LoadCertificatesFromPairs(certKeyFilePairs [][2]string) (certs []tls.Certificate, errs []error) {
 ```
 
 ## HostNames []string
