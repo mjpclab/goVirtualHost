@@ -66,3 +66,20 @@ func LoadCertificatesFromPairs(certKeyFilePairs [][2]string) (certs []tls.Certif
 	}
 	return
 }
+
+func CertsKeysToPairs(certFiles, keyFiles []string) (certKeyFilePairs [][2]string, errs []error) {
+	certLen := len(certFiles)
+	if certLen != len(keyFiles) {
+		errs = []error{CertKeyFileCountNotMatch}
+		return
+	}
+	if certLen == 0 {
+		return
+	}
+
+	certKeyFilePairs = make([][2]string, 0, certLen)
+	for i := 0; i < certLen; i++ {
+		certKeyFilePairs = append(certKeyFilePairs, [2]string{certFiles[i], keyFiles[i]})
+	}
+	return
+}
