@@ -117,9 +117,11 @@ func (svc *Service) Open() (errs []error) {
 	svc.params = nil // release unused data
 
 	for _, s := range svc.serveables {
-		s.updateDefaultVhost()
-		s.updateHttpServerTLSConfig()
-		s.updateHttpServerHandler()
+		es := s.init()
+		errs = append(errs, es...)
+	}
+	if len(errs) > 0 {
+		return
 	}
 
 	defer svc.Close()

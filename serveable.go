@@ -11,8 +11,7 @@ func newServeable(useTLS bool) *serveable {
 		useTLS:       useTLS,
 		vhosts:       vhosts{},
 		defaultVhost: nil,
-
-		server: &http.Server{},
+		server:       &http.Server{},
 	}
 }
 
@@ -26,6 +25,27 @@ func (serveable *serveable) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	serveable.defaultVhost.handler.ServeHTTP(w, r)
+}
+
+func (serveable *serveable) updateHttpServerTLSConfig() (errs []error) {
+	if !serveable.useTLS {
+		return
+	}
+
+	certs := make([]tls.Certificate, 0, len(serveable.vhosts))
+
+	for _, vhost := range serveable.vhosts {
+		certs = append(certs, vhost.certs...)
+		externalCerts, es := LoadCertificatesFromPairs(vhost.certKeyPaths)
+		certs = append(certs, externalCerts...)
+		errs = append(errs, es...)
+	}
+
+	serveable.server.TLSConfig = &tls.Config{
+		Certificates: certs,
+	}
+
+	return
 }
 
 func (serveable *serveable) getDefaultVhost() *vhost {
@@ -46,22 +66,6 @@ func (serveable *serveable) updateDefaultVhost() {
 	serveable.defaultVhost = serveable.getDefaultVhost()
 }
 
-func (serveable *serveable) updateHttpServerTLSConfig() {
-	if !serveable.useTLS {
-		return
-	}
-
-	certs := make([]tls.Certificate, 0, len(serveable.vhosts))
-
-	for _, vhost := range serveable.vhosts {
-		certs = append(certs, vhost.certs...)
-	}
-
-	serveable.server.TLSConfig = &tls.Config{
-		Certificates: certs,
-	}
-}
-
 func (serveable *serveable) updateHttpServerHandler() {
 	if len(serveable.vhosts) == 1 {
 		serveable.server.Handler = serveable.defaultVhost.handler
@@ -69,6 +73,13 @@ func (serveable *serveable) updateHttpServerHandler() {
 	}
 
 	serveable.server.Handler = serveable
+}
+
+func (serveable *serveable) init() (errs []error) {
+	errs = serveable.updateHttpServerTLSConfig()
+	serveable.updateDefaultVhost()
+	serveable.updateHttpServerHandler()
+	return
 }
 
 func (serveable *serveable) open(l *listenable) error {
