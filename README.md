@@ -81,13 +81,13 @@ List of TLS certificate file path with each element `[2]string{certPath, keyPath
 TLS certificates supplied for TLS mode. Several helper functions can be used to load from external PEM files:
 ```go
 // load certificate from cert file and key file
-func LoadCertificate(certFile, keyFile string) (cert tls.Certificate, err error)
+func LoadCertificate(certFile, keyFile string) (cert *tls.Certificate, err error)
 
 // load certificates from cert file list and key file list
-func LoadCertificates(certFiles, keyFiles []string) (certs []tls.Certificate, errs []error)
+func LoadCertificates(certFiles, keyFiles []string) (certs []*tls.Certificate, errs []error)
 
 // load certificates from a list, each element is an array that contains certificate file and key file
-func LoadCertificatesFromPairs(certKeyFilePairs [][2]string) (certs []tls.Certificate, errs []error) {
+func LoadCertificatesFromPairs(certKeyFilePairs [][2]string) (certs []*tls.Certificate, errs []error) {
 ```
 
 ## HostNames []string
@@ -109,6 +109,9 @@ the second dimension is the index of URL in that virtual host.
 # (*Service) Open() []error
 Start listening on network ports, and serve for http requests. The method will not return until all servers are closed.
 e.g. call `Close` method on another goroutine.
+
+# (*Service) ReloadCertificates() []error
+Reload TLS certificates from `CertKeyPaths`.
 
 # (*Service) Close()
 Stop serving. To restart serving, a new `Service` must be created.

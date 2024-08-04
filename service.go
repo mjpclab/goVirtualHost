@@ -135,6 +135,14 @@ func (svc *Service) Open() (errs []error) {
 	return
 }
 
+func (svc *Service) ReloadCertificates() (errs []error) {
+	for _, s := range svc.serveables {
+		es := s.loadCertificates()
+		errs = append(errs, es...)
+	}
+	return
+}
+
 func (svc *Service) Shutdown(ctx context.Context) {
 	svc.mu.Lock()
 	if svc.state >= stateClosed {

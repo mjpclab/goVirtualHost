@@ -13,13 +13,13 @@ type HostInfo struct {
 	ListensPlain []string
 	ListensTLS   []string
 	CertKeyPaths [][2]string // []{ {certFile, keyFile}, ... }
-	Certs        []tls.Certificate
+	Certs        []*tls.Certificate
 	HostNames    []string
 	Handler      http.Handler
 }
 
 type certKeyPairs [][2]string
-type certs []tls.Certificate
+type certs []*tls.Certificate
 
 // normalized HostInfo Param
 type param struct {
@@ -59,6 +59,7 @@ type serveables []*serveable
 type vhost struct {
 	hostNames    []string
 	certKeyPaths certKeyPairs
+	loadedCerts  certs // load from `certKeyPaths` + `certs`
 	certs        certs
 	handler      http.Handler
 }
