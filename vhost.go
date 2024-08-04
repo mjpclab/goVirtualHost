@@ -57,13 +57,6 @@ func (vh *vhost) lookupCertificate(hello *tls.ClientHelloInfo) (*tls.Certificate
 	}
 
 	for _, cert := range vh.loadedCerts {
-		err := hello.SupportsCertificate(cert)
-		if err == nil {
-			return cert, err
-		}
-	}
-
-	for _, cert := range vh.loadedCerts {
 		if cert.Leaf == nil {
 			cert.Leaf, _ = x509.ParseCertificate(cert.Certificate[0])
 			if cert.Leaf == nil {
