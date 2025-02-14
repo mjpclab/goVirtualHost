@@ -193,7 +193,7 @@ func (svc *Service) GetAccessibleURLs(includeLoopback bool) [][]string {
 
 	for _, l := range svc.listenables {
 		s := l.serveable
-		defaultVh := s.getDefaultVhost()
+		s.updateDefaultVhost()
 
 		port := ""
 		if !isDefaultPort(l.port, s.useTLS) {
@@ -219,7 +219,7 @@ func (svc *Service) GetAccessibleURLs(includeLoopback bool) [][]string {
 					vhUrls[vh] = append(vhUrls[vh], url)
 				}
 			}
-			if vh == defaultVh {
+			if vh == s.defaultVhost {
 				var url string
 				if s.useTLS {
 					url = httpsUrl
@@ -244,8 +244,10 @@ func (svc *Service) GetAccessibleURLs(includeLoopback bool) [][]string {
 						ips = ipv6s
 					}
 					for _, ip := range ips {
-						ipUrl := url + ip + port
-						vhUrls[vh] = append(vhUrls[vh], ipUrl)
+						if ipVh := s.lookupVhost(ip); ipVh == vh {
+							ipUrl := url + ip + port
+							vhUrls[vh] = append(vhUrls[vh], ipUrl)
+						}
 					}
 				}
 			}
