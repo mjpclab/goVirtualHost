@@ -21,7 +21,7 @@ func main() {
 	}
 	errors, _ = svc.Add(&goVirtualHost.HostInfo{
 		Listens:   []string{":8080"},
-		Certs:     []tls.Certificate{certLocalhost},
+		Certs:     []*tls.Certificate{certLocalhost},
 		HostNames: []string{"localhost"},
 		Handler:   http.FileServer(http.Dir(".")),
 	})
@@ -36,7 +36,7 @@ func main() {
 	}
 	errors, _ = svc.Add(&goVirtualHost.HostInfo{
 		Listens:   []string{":8080"},
-		Certs:     []tls.Certificate{certExample},
+		Certs:     []*tls.Certificate{certExample},
 		HostNames: nil,
 		Handler:   http.FileServer(http.Dir("/tmp")),
 	})
