@@ -25,9 +25,9 @@ func newVhost(hostNames []string, certKeyPaths certKeyPairs, vhCerts certs, hand
 		hostNames:    hostNames,
 		certKeyPaths: certKeyPaths,
 		certs:        vhCerts,
-		loadedCerts:  vhCerts,
 		handler:      handler,
 	}
+	vhost.loadedCerts.Store(&vhCerts)
 
 	return vhost
 }
@@ -50,17 +50,18 @@ func (vh *vhost) matchHostName(name string) bool {
 }
 
 func (vh *vhost) loadCertificates() []error {
-	loadedCerts, errs := LoadCertificatesFromPairs(vh.certKeyPaths)
+	fileCerts, errs := LoadCertificatesFromPairs(vh.certKeyPaths)
+	loadedCerts := certs(fileCerts)
 	makeLeaf(loadedCerts)
 	loadedCerts = append(loadedCerts, vh.certs...)
 
-	vh.loadedCerts = loadedCerts
+	vh.loadedCerts.Store(&loadedCerts)
 
 	return errs
 }
 
 func (vh *vhost) lookupCertificate(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
-	certs := vh.loadedCerts
+	certs := *vh.loadedCerts.Load()
 	certLen := len(certs)
 	if certLen == 1 {
 		return certs[0], nil

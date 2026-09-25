@@ -109,3 +109,27 @@ func TestLookupCertificateConcurrently(t *testing.T) {
 	}
 	wg.Wait()
 }
+
+func TestReloadCertificatesConcurrently(t *testing.T) {
+	vh := newVhost(nil, nil, certs{newTestCert(t, "a.example.com"), newTestCert(t, "b.example.com")}, nil)
+	vh.loadCertificates()
+
+	var wg sync.WaitGroup
+	for i := 0; i < 4; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				cert, err := vh.lookupCertificate(&tls.ClientHelloInfo{ServerName: "b.example.com"})
+				if err != nil || cert == nil {
+					t.Error(cert, err)
+					return
+				}
+			}
+		}()
+	}
+	for j := 0; j < 100; j++ {
+		vh.loadCertificates()
+	}
+	wg.Wait()
+}
